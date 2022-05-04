@@ -1,5 +1,6 @@
 package uz.dev_abubakir_khakimov.product_controller.fragments
 
+import android.Manifest
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
@@ -9,13 +10,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import me.dm7.barcodescanner.zbar.Result
 import me.dm7.barcodescanner.zbar.ZBarScannerView
 import uz.dev_abubakir_khakimov.product_controller.databinding.FragmentScannerBinding
 import uz.dev_abubakir_khakimov.product_controller.models.MainViewModel
+import uz.dev_abubakir_khakimov.product_controller.models.Product
 
 class ScannerFragment : Fragment(), ZBarScannerView.ResultHandler {
     
@@ -24,6 +28,7 @@ class ScannerFragment : Fragment(), ZBarScannerView.ResultHandler {
     val vibrator: Vibrator by lazy {
         requireActivity().getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
     }
+    var snackBar: Snackbar? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,16 +63,31 @@ class ScannerFragment : Fragment(), ZBarScannerView.ResultHandler {
             vibrate()
 
             if (it == null){
-                Toast.makeText(requireActivity(), "No such barcode found!", Toast.LENGTH_SHORT).show()
+                showSnackBar("No product found with this barcode!", null)
             }else{
-                MoreInfoFragment.newInstance(it).show(childFragmentManager, "tag")
+                showSnackBar(it.name, it)
             }
         }
+    }
+
+    private fun showSnackBar(message: String, product: Product?){
+        snackBar = Snackbar.make(binding.root, message, Snackbar.LENGTH_INDEFINITE)
+
+        if (product != null){
+            snackBar!!.setAction("View"){
+                MoreInfoFragment.newInstance(product).show(childFragmentManager, "tag")
+            }
+        }
+
+        snackBar!!.show()
     }
 
     private fun initScanning(){
         binding.zbView.setResultHandler(this)
         binding.zbView.startCamera()
+
+        snackBar?.dismiss()
+        snackBar = null
     }
 
     override fun onPause() {

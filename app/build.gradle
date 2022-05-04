@@ -84,4 +84,8 @@ dependencies {
     //barcode scanner
     implementation 'me.dm7.barcodescanner:zbar:1.8.4'
 
+    //Apache POI for excel
+    implementation 'com.github.SUPERCILEX.poi-android:poi:3.17'
+    compileOnly 'org.apache.poi:poi-ooxml:3.17'
+
 }

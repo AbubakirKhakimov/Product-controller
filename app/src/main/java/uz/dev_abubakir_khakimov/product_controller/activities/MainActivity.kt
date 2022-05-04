@@ -1,7 +1,7 @@
 package uz.dev_abubakir_khakimov.product_controller.activities
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import uz.dev_abubakir_khakimov.product_controller.R
 
 class MainActivity : AppCompatActivity() {

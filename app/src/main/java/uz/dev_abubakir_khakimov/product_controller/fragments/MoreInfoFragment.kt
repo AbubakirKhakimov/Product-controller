@@ -1,15 +1,29 @@
 package uz.dev_abubakir_khakimov.product_controller.fragments
 
+import android.content.ContentValues
+import android.graphics.Bitmap
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.DialogFragment
 import com.bumptech.glide.Glide
 import uz.dev_abubakir_khakimov.product_controller.R
 import uz.dev_abubakir_khakimov.product_controller.databinding.FragmentMoreInfoBinding
 import uz.dev_abubakir_khakimov.product_controller.models.Product
+import uz.dev_abubakir_khakimov.product_controller.utils.BarcodeManager
+import uz.dev_abubakir_khakimov.product_controller.utils.MediaSaveManager
+import java.io.File
+import java.io.FileOutputStream
+import java.io.OutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -40,6 +54,11 @@ class MoreInfoFragment : DialogFragment() {
 
         binding.close.setOnClickListener {
             dismiss()
+        }
+
+        binding.saveImage.setOnClickListener {
+            MediaSaveManager(requireActivity()).saveMediaToStorage(binding.barCodeImage.drawable.toBitmap(), "${product.barcode}_${product.name}")
+            Toast.makeText(requireActivity(), "Successfully saved!", Toast.LENGTH_SHORT).show()
         }
 
     }
