@@ -2,7 +2,6 @@ package uz.dev_abubakir_khakimov.product_controller.utils
 
 import android.content.ContentValues
 import android.content.Context
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
@@ -127,31 +126,51 @@ class ExcelManager(val context: Context, val productsList: ArrayList<Product>) {
     }
 
     fun createExcel(workbook: Workbook): String {
+        var fos: OutputStream? = null
 
-        //Get App Director, APP_DIRECTORY_NAME is a string
-        val appDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
-//        val appDirectory = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
+        //For devices running android >= Q
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            //getting the contentResolver
+            context.contentResolver?.also { resolver ->
+                //Content resolver will process the contentvalues
+                val contentValues = ContentValues().apply {
+                    //putting file information in content values
+                    put(MediaStore.MediaColumns.DISPLAY_NAME, FILE_NAME)
+                    put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOCUMENTS)
+                }
 
-        //Check App Directory whether it exists or not, create if not.
-        if (appDirectory != null && !appDirectory.exists()) {
-            appDirectory.mkdirs()
+                //Inserting the contentValues to contentResolver and getting the Uri
+                val fileUri: Uri? =
+                    resolver.insert(MediaStore.Files.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY), contentValues)
+
+                //Opening an outputstream with the Uri that we got
+                fos = fileUri?.let { resolver.openOutputStream(it) }
+            }
+        } else {
+            //These for devices running on android < Q
+            //So I don't think an explanation is needed here
+            val fileDir =
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+
+            if (fileDir != null && !fileDir.exists()) {
+                fileDir.mkdirs()
+            }
+
+            val file = File(fileDir, FILE_NAME)
+            fos = FileOutputStream(file)
         }
-
-        //Create excel file with extension .xlsx
-        val excelFile = File(appDirectory, FILE_NAME)
 
         //Write workbook to file using FileOutputStream
         try {
-            val fileOut = FileOutputStream(excelFile)
-            workbook.write(fileOut)
-            fileOut.close()
+            workbook.write(fos)
+            fos?.close()
         } catch (e: FileNotFoundException) {
             e.printStackTrace()
         } catch (e: IOException) {
             e.printStackTrace()
         }
 
-        return excelFile.absolutePath
+        return "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)}/$FILE_NAME"
     }
 
 }

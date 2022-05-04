@@ -1,6 +1,7 @@
-package uz.dev_abubakir_khakimov.product_controller
+package uz.dev_abubakir_khakimov.product_controller.app
 
 import android.app.Application
+import com.orhanobut.hawk.Hawk
 
 class AppController: Application() {
 
@@ -17,6 +18,11 @@ class AppController: Application() {
             "org.apache.poi.javax.xml.stream.XMLEventFactory",
             "com.fasterxml.aalto.stax.EventFactoryImpl"
         );
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        Hawk.init(this).build()
     }
 
 }

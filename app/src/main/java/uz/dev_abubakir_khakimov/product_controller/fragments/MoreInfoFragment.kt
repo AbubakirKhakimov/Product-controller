@@ -1,6 +1,8 @@
 package uz.dev_abubakir_khakimov.product_controller.fragments
 
+import android.Manifest
 import android.content.ContentValues
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
@@ -13,6 +15,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.DialogFragment
 import com.bumptech.glide.Glide
@@ -57,10 +61,31 @@ class MoreInfoFragment : DialogFragment() {
         }
 
         binding.saveImage.setOnClickListener {
-            MediaSaveManager(requireActivity()).saveMediaToStorage(binding.barCodeImage.drawable.toBitmap(), "${product.barcode}_${product.name}")
-            Toast.makeText(requireActivity(), "Successfully saved!", Toast.LENGTH_SHORT).show()
+            if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
+                saveImageExternalStorage()
+            }else{
+                requestStoragePermission()
+            }
         }
 
+    }
+
+    private fun saveImageExternalStorage(){
+        MediaSaveManager(requireActivity()).apply {
+            saveMediaToStorage(binding.barCodeImage.drawable.toBitmap(), "${product.barcode}_${product.name}.jpg")
+        }
+
+        Toast.makeText(requireActivity(), "Successfully saved!", Toast.LENGTH_SHORT).show()
+    }
+
+    private val storagePermission = registerForActivityResult(ActivityResultContracts.RequestPermission()){
+        if (it){
+            saveImageExternalStorage()
+        }
+    }
+
+    private fun requestStoragePermission(){
+        storagePermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     }
 
     private fun updateUI(){

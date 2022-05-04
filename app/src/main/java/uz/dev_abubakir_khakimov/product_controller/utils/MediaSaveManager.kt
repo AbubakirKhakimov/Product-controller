@@ -15,9 +15,6 @@ import java.io.OutputStream
 class MediaSaveManager(val context: Context) {
 
     fun saveMediaToStorage(bitmap: Bitmap, fileName: String) {
-        //Generating a file name
-        val generatedFileName = "${fileName}.jpg"
-
         //Output stream
         var fos: OutputStream? = null
 
@@ -30,11 +27,9 @@ class MediaSaveManager(val context: Context) {
                 val contentValues = ContentValues().apply {
 
                     //putting file information in content values
-                    put(MediaStore.MediaColumns.DISPLAY_NAME, generatedFileName)
+                    put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
                     put(MediaStore.MediaColumns.MIME_TYPE, "image/jpg")
                     put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + "/Product images")
-
-//                    Log.d("test", MediaStore.MediaColumns.RELATIVE_PATH +" "+ Environment.DIRECTORY_PICTURES)
                 }
 
                 //Inserting the contentValues to contentResolver and getting the Uri
@@ -48,8 +43,13 @@ class MediaSaveManager(val context: Context) {
             //These for devices running on android < Q
             //So I don't think an explanation is needed here
             val imagesDir =
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-            val image = File(imagesDir, generatedFileName)
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES + "/Product images")
+
+            if (imagesDir != null && !imagesDir.exists()) {
+                imagesDir.mkdirs()
+            }
+
+            val image = File(imagesDir, fileName)
             fos = FileOutputStream(image)
         }
 

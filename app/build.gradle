@@ -88,4 +88,7 @@ dependencies {
     implementation 'com.github.SUPERCILEX.poi-android:poi:3.17'
     compileOnly 'org.apache.poi:poi-ooxml:3.17'
 
+    //Hawk
+    implementation "com.orhanobut:hawk:2.0.1"
+
 }

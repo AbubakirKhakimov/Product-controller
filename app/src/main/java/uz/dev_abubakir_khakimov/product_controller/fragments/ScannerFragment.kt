@@ -93,6 +93,9 @@ class ScannerFragment : Fragment(), ZBarScannerView.ResultHandler {
     override fun onPause() {
         super.onPause()
         binding.zbView.stopCamera()
+
+        snackBar?.dismiss()
+        snackBar = null
     }
 
     override fun onResume() {

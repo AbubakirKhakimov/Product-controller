@@ -7,9 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,7 +19,7 @@ import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import org.apache.poi.hssf.usermodel.HeaderFooter.file
+import com.google.android.material.snackbar.Snackbar
 import uz.dev_abubakir_khakimov.product_controller.R
 import uz.dev_abubakir_khakimov.product_controller.adapters.ProductsListAdapter
 import uz.dev_abubakir_khakimov.product_controller.adapters.ProductsListAdapterCallBack
@@ -76,7 +74,11 @@ class HomeFragment : Fragment(), ProductsListAdapterCallBack {
                     findNavController().navigate(R.id.action_homeFragment_to_addProductFragment)
                 }
                 R.id.export_excel -> {
-                    exportExcel()
+                    if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
+                        exportExcel()
+                    }else{
+                        requestStoragePermission()
+                    }
                 }
             }
 
@@ -106,12 +108,21 @@ class HomeFragment : Fragment(), ProductsListAdapterCallBack {
 
             requireActivity().runOnUiThread {
                 customDialog.dismiss()
-                Toast.makeText(requireActivity(), "Successfully saved!", Toast.LENGTH_SHORT).show()
-                openFile(path)
+                showSnackBar(path)
             }
         }.start()
 
         customDialog.show()
+    }
+
+    private fun showSnackBar(path: String) {
+        val snackBar = Snackbar.make(binding.root, "Successfully saved!", Snackbar.LENGTH_LONG)
+
+        snackBar.setAction("View") {
+            openFile(path)
+        }
+
+        snackBar.show()
     }
 
     private fun openFile(path: String) {
@@ -122,7 +133,7 @@ class HomeFragment : Fragment(), ProductsListAdapterCallBack {
         } catch (e: ActivityNotFoundException) {
             Toast.makeText(
                 requireActivity(),
-                "No Application available to viewExcel",
+                "No Application available to view Excel",
                 Toast.LENGTH_SHORT
             ).show()
         }
@@ -151,18 +162,28 @@ class HomeFragment : Fragment(), ProductsListAdapterCallBack {
         if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED){
             findNavController().navigate(R.id.action_homeFragment_to_scannerFragment)
         }else{
-            requestPermission()
+            requestCameraPermission()
         }
     }
 
-    private val requestPermissionCamera = registerForActivityResult(ActivityResultContracts.RequestPermission()){
+    private val cameraPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()){
         if (it){
             findNavController().navigate(R.id.action_homeFragment_to_scannerFragment)
         }
     }
 
-    private fun requestPermission(){
-        requestPermissionCamera.launch(Manifest.permission.CAMERA)
+    private fun requestCameraPermission(){
+        cameraPermission.launch(Manifest.permission.CAMERA)
+    }
+
+    private val storagePermission = registerForActivityResult(ActivityResultContracts.RequestPermission()){
+        if (it){
+            exportExcel()
+        }
+    }
+
+    private fun requestStoragePermission(){
+        storagePermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     }
 
 }
