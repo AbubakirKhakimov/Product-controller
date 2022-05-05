@@ -17,6 +17,7 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import me.dm7.barcodescanner.zbar.Result
 import me.dm7.barcodescanner.zbar.ZBarScannerView
+import uz.dev_abubakir_khakimov.product_controller.R
 import uz.dev_abubakir_khakimov.product_controller.databinding.FragmentScannerBinding
 import uz.dev_abubakir_khakimov.product_controller.models.MainViewModel
 import uz.dev_abubakir_khakimov.product_controller.models.Product
@@ -63,7 +64,7 @@ class ScannerFragment : Fragment(), ZBarScannerView.ResultHandler {
             vibrate()
 
             if (it == null){
-                showSnackBar("No product found with this barcode!", null)
+                showSnackBar(getString(R.string.no_product_found_this_barcode), null)
             }else{
                 showSnackBar(it.name, it)
             }
@@ -74,7 +75,7 @@ class ScannerFragment : Fragment(), ZBarScannerView.ResultHandler {
         snackBar = Snackbar.make(binding.root, message, Snackbar.LENGTH_INDEFINITE)
 
         if (product != null){
-            snackBar!!.setAction("View"){
+            snackBar!!.setAction(getString(R.string.view)){
                 MoreInfoFragment.newInstance(product).show(childFragmentManager, "tag")
             }
         }

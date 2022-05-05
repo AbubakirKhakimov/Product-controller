@@ -1,8 +1,9 @@
 package uz.dev_abubakir_khakimov.product_controller.fragments
 
 import android.Manifest
+import android.R.attr.mimeType
 import android.app.AlertDialog
-import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
@@ -11,15 +12,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import android.webkit.MimeTypeMap
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import androidx.core.net.toUri
+import androidx.core.content.FileProvider
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.google.android.material.snackbar.Snackbar
+import org.apache.poi.hssf.usermodel.HeaderFooter.file
 import uz.dev_abubakir_khakimov.product_controller.R
 import uz.dev_abubakir_khakimov.product_controller.adapters.ProductsListAdapter
 import uz.dev_abubakir_khakimov.product_controller.adapters.ProductsListAdapterCallBack
@@ -28,6 +32,7 @@ import uz.dev_abubakir_khakimov.product_controller.databinding.FragmentHomeBindi
 import uz.dev_abubakir_khakimov.product_controller.models.MainViewModel
 import uz.dev_abubakir_khakimov.product_controller.models.Product
 import uz.dev_abubakir_khakimov.product_controller.utils.ExcelManager
+import java.io.File
 
 
 class HomeFragment : Fragment(), ProductsListAdapterCallBack {
@@ -80,6 +85,9 @@ class HomeFragment : Fragment(), ProductsListAdapterCallBack {
                         requestStoragePermission()
                     }
                 }
+                R.id.change_language -> {
+                    ChangeLanguageFragment().show(childFragmentManager, "tag")
+                }
             }
 
             binding.root.closeDrawers()
@@ -99,44 +107,48 @@ class HomeFragment : Fragment(), ProductsListAdapterCallBack {
         val dialogBinding = ExportExcelDialogLayoutBinding.inflate(layoutInflater)
         customDialog.setView(dialogBinding.root)
 
-        var path: String
+        var file: File
 
         Thread{
             ExcelManager(requireActivity(), productsList).apply {
-                path = createExcel(createWorkbook())
+                file = createExcel(createWorkbook())
             }
 
             requireActivity().runOnUiThread {
                 customDialog.dismiss()
-                showSnackBar(path)
+                showSnackBar(file)
             }
         }.start()
 
         customDialog.show()
     }
 
-    private fun showSnackBar(path: String) {
-        val snackBar = Snackbar.make(binding.root, "Successfully saved!", Snackbar.LENGTH_LONG)
+    private fun showSnackBar(file: File) {
+        val snackBar = Snackbar.make(binding.root, getString(R.string.successfully_saved), Snackbar.LENGTH_LONG)
 
-        snackBar.setAction("View") {
-            openFile(path)
+        snackBar.setAction(getString(R.string.view)) {
+            openFile(file)
         }
 
         snackBar.show()
     }
 
-    private fun openFile(path: String) {
-        val excelIntent = Intent(Intent.ACTION_VIEW, "ms-excel:ofv|u|${path}".toUri())
-        excelIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-        try {
-            startActivity(excelIntent)
-        } catch (e: ActivityNotFoundException) {
-            Toast.makeText(
-                requireActivity(),
-                "No Application available to view Excel",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
+    private fun openFile(file: File) {
+        val intent = Intent(Intent.ACTION_VIEW)
+        val apkURI = FileProvider.getUriForFile(
+            requireActivity(),
+            requireActivity().packageName, file
+        )
+
+        val myMime = MimeTypeMap.getSingleton()
+        val mimeType =
+            myMime.getMimeTypeFromExtension(MimeTypeMap.getFileExtensionFromUrl(apkURI.toString())) //It will return the mimetype
+
+
+        intent.setDataAndType(apkURI, mimeType)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        startActivity(intent)
     }
 
     private fun readAllProducts(){

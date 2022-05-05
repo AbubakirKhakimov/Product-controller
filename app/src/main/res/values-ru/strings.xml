@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Product controller</string>
+    <string name="scanner">Сканер</string>
+    <string name="add_product">Добавить продукт</string>
+    <string name="export_excel">Экспорт excel</string>
+    <string name="languagesListName">Язык</string>
+    <string name="englishLanguage">Английский</string>
+    <string name="russianLanguage">Русский</string>
+    <string name="uzbekLanguage">Узбекский</string>
+    <string name="change_language">Изменение языка</string>
+    <string name="name">Имя</string>
+    <string name="barcode">Штрих-код</string>
+    <string name="auto_generate">Автоматически генерировать</string>
+    <string name="count">Количество</string>
+    <string name="entry_price">Цена входа</string>
+    <string name="selling_price">Цена продажи</string>
+    <string name="percent">Процент</string>
+    <string name="term">Срок</string>
+    <string name="firm">Фирма</string>
+    <string name="product_info">Информация о продукте</string>
+    <string name="please_fill_in_all_the_boxes">Пожалуйста, заполните все поля!</string>
+    <string name="successfully_saved">Успешно сохранено!</string>
+    <string name="barcode_limit">Штрих-код должен быть не менее 13 цифр!</string>
+    <string name="view">Просмотр</string>
+    <string name="no_app_view_excel">Нет доступных приложений для просмотра Excel</string>
+    <string name="entry_date">Дата ввода</string>
+    <string name="no_product_found_this_barcode">Товар с таким штрих-кодом не найден!</string>
+</resources>

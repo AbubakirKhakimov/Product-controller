@@ -75,7 +75,7 @@ class MoreInfoFragment : DialogFragment() {
             saveMediaToStorage(binding.barCodeImage.drawable.toBitmap(), "${product.barcode}_${product.name}.jpg")
         }
 
-        Toast.makeText(requireActivity(), "Successfully saved!", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireActivity(), getString(R.string.successfully_saved), Toast.LENGTH_SHORT).show()
     }
 
     private val storagePermission = registerForActivityResult(ActivityResultContracts.RequestPermission()){
@@ -91,14 +91,14 @@ class MoreInfoFragment : DialogFragment() {
     private fun updateUI(){
         Glide.with(requireActivity()).load(product.barcodeImagePath).into(binding.barCodeImage)
         binding.barcode.text = product.barcode
-        binding.name.text = getConcatenateStr("Name", product.name)
-        binding.count.text = getConcatenateStr("Count", product.count.toString())
-        binding.entryPrice.text = getConcatenateStr("Entry price", product.entryPrice)
-        binding.sellingPrice.text = getConcatenateStr("Selling price", product.sellingPrice)
-        binding.percent.text = getConcatenateStr("Percent", product.percent.toString())
-        binding.term.text = getConcatenateStr("Term", product.term)
-        binding.firmName.text = getConcatenateStr("Firm name", product.firm)
-        binding.entryDate.text = getConcatenateStr("Entry date", getStringDate(product.entryDate))
+        binding.name.text = getConcatenateStr(getString(R.string.name), product.name)
+        binding.count.text = getConcatenateStr(getString(R.string.count), product.count.toString())
+        binding.entryPrice.text = getConcatenateStr(getString(R.string.entry_price), product.entryPrice)
+        binding.sellingPrice.text = getConcatenateStr(getString(R.string.selling_price), product.sellingPrice)
+        binding.percent.text = getConcatenateStr(getString(R.string.percent), product.percent.toString())
+        binding.term.text = getConcatenateStr(getString(R.string.term), product.term)
+        binding.firmName.text = getConcatenateStr(getString(R.string.firm), product.firm)
+        binding.entryDate.text = getConcatenateStr(getString(R.string.entry_date), getStringDate(product.entryDate))
     }
 
     private fun getStringDate(dateMillis: Long):String{

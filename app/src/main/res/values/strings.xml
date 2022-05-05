@@ -1,8 +1,28 @@
 <resources>
     <string name="app_name">Product controller</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="scanner">Scanner</string>
     <string name="add_product">Add product</string>
     <string name="export_excel">Export excel</string>
+    <string name="languagesListName">Language</string>
+    <string name="englishLanguage">English</string>
+    <string name="russianLanguage">Russian</string>
+    <string name="uzbekLanguage">Uzbek</string>
+    <string name="change_language">Change language</string>
+    <string name="name">Name</string>
+    <string name="barcode">Barcode</string>
+    <string name="auto_generate">Auto generate</string>
+    <string name="count">Count</string>
+    <string name="entry_price">Entry price</string>
+    <string name="selling_price">Selling price</string>
+    <string name="percent">Percent</string>
+    <string name="term">Term</string>
+    <string name="firm">Firm</string>
+    <string name="product_info">Product info</string>
+    <string name="please_fill_in_all_the_boxes">Please fill in all the boxes!</string>
+    <string name="successfully_saved">Successfully saved!</string>
+    <string name="barcode_limit">The barcode must not be less than 13 digits!</string>
+    <string name="view">View</string>
+    <string name="no_app_view_excel">No Application available to view Excel</string>
+    <string name="entry_date">Entry date</string>
+    <string name="no_product_found_this_barcode">No product found with this barcode!</string>
 </resources>

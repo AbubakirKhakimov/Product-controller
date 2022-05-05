@@ -125,11 +125,12 @@ class ExcelManager(val context: Context, val productsList: ArrayList<Product>) {
         }
     }
 
-    fun createExcel(workbook: Workbook): String {
+    fun createExcel(workbook: Workbook): File {
         var fos: OutputStream? = null
+        val file = checkFileExists()
 
-        //For devices running android >= Q
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            //For devices running android >= Q
             //getting the contentResolver
             context.contentResolver?.also { resolver ->
                 //Content resolver will process the contentvalues
@@ -148,15 +149,6 @@ class ExcelManager(val context: Context, val productsList: ArrayList<Product>) {
             }
         } else {
             //These for devices running on android < Q
-            //So I don't think an explanation is needed here
-            val fileDir =
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
-
-            if (fileDir != null && !fileDir.exists()) {
-                fileDir.mkdirs()
-            }
-
-            val file = File(fileDir, FILE_NAME)
             fos = FileOutputStream(file)
         }
 
@@ -170,7 +162,23 @@ class ExcelManager(val context: Context, val productsList: ArrayList<Product>) {
             e.printStackTrace()
         }
 
-        return "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)}/$FILE_NAME"
+        return file
+    }
+
+    private fun checkFileExists(): File{
+        val fileDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+
+        if (fileDir != null && !fileDir.exists()) {
+            fileDir.mkdirs()
+        }
+
+        val file = File(fileDir, FILE_NAME)
+
+        if (file.exists()) {
+            file.delete()
+        }
+
+        return file
     }
 
 }

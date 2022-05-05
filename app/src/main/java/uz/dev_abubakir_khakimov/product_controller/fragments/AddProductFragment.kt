@@ -109,7 +109,7 @@ class AddProductFragment : Fragment() {
                 Date().time
             )
         }catch (e: NumberFormatException){
-            Toast.makeText(requireActivity(), "Please fill in all the boxes!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireActivity(), getString(R.string.please_fill_in_all_the_boxes), Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -117,10 +117,10 @@ class AddProductFragment : Fragment() {
             product.barcodeImagePath = saveBitmap(bitmap!!, "${product.barcode}_${product.name}")
 
             viewModel.insertProduct(product)
-            Toast.makeText(requireActivity(), "Successfully saved!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireActivity(), getString(R.string.successfully_saved), Toast.LENGTH_SHORT).show()
             findNavController().popBackStack()
         }else{
-            Toast.makeText(requireActivity(), "Please fill in all the boxes!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireActivity(), getString(R.string.please_fill_in_all_the_boxes), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -131,7 +131,7 @@ class AddProductFragment : Fragment() {
                 product.term.isNotEmpty() &&
                 product.firm.isNotEmpty() &&
                 if (bitmap != null) true else {
-                    binding.barcodeLayout.error = "The barcode must not be less than 13 digits!"
+                    binding.barcodeLayout.error = getString(R.string.barcode_limit)
                     false
                 }
     }

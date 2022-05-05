@@ -14,9 +14,10 @@ import java.io.OutputStream
 
 class MediaSaveManager(val context: Context) {
 
-    fun saveMediaToStorage(bitmap: Bitmap, fileName: String) {
+    fun saveMediaToStorage(bitmap: Bitmap, fileName: String): File {
         //Output stream
         var fos: OutputStream? = null
+        val imageFile = checkFileExists(fileName)
 
         //For devices running android >= Q
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -41,22 +42,31 @@ class MediaSaveManager(val context: Context) {
             }
         } else {
             //These for devices running on android < Q
-            //So I don't think an explanation is needed here
-            val imagesDir =
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES + "/Product images")
-
-            if (imagesDir != null && !imagesDir.exists()) {
-                imagesDir.mkdirs()
-            }
-
-            val image = File(imagesDir, fileName)
-            fos = FileOutputStream(image)
+            fos = FileOutputStream(imageFile)
         }
 
         fos?.use {
             //Finally writing the bitmap to the output stream that we opened
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it)
         }
+
+        return imageFile
+    }
+
+    private fun checkFileExists(fileName: String): File{
+        val imagesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES + "/Product images")
+
+        if (imagesDir != null && !imagesDir.exists()) {
+            imagesDir.mkdirs()
+        }
+
+        val imageFile = File(imagesDir, fileName)
+
+        if (imageFile.exists()){
+            imageFile.delete()
+        }
+
+        return imageFile
     }
 
 }

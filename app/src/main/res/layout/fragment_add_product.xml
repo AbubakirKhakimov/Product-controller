@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_weight="1"
-            android:text="Add product"
+            android:text="@string/add_product"
             android:textColor="@color/white"
             android:textSize="20sp" />
 
@@ -72,7 +72,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
-                android:hint="Name">
+                android:hint="@string/name">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/name"
@@ -88,7 +88,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                android:hint="Barcode">
+                android:hint="@string/barcode">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/barcode"
@@ -103,7 +103,7 @@
                 android:id="@+id/autoGenerate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Auto generate"
+                android:text="@string/auto_generate"
                 app:cornerRadius="8dp"
                 android:textColor="@color/white"
                 android:layout_marginStart="16dp"
@@ -117,7 +117,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                android:hint="Count">
+                android:hint="@string/count">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/count"
@@ -132,7 +132,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
-                android:hint="Entry price">
+                android:hint="@string/entry_price">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/entryPrice"
@@ -147,7 +147,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                android:hint="Selling price">
+                android:hint="@string/selling_price">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/sellingPrice"
@@ -161,7 +161,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
-                android:hint="Percent">
+                android:hint="@string/percent">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/percent"
@@ -177,7 +177,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                android:hint="Term">
+                android:hint="@string/term">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/term"
@@ -191,7 +191,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
-                android:hint="Firm">
+                android:hint="@string/firm">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/firm"
