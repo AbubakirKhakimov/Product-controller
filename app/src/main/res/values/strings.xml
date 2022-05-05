@@ -7,7 +7,6 @@
     <string name="englishLanguage">English</string>
     <string name="russianLanguage">Russian</string>
     <string name="uzbekLanguage">Uzbek</string>
-    <string name="change_language">Change language</string>
     <string name="name">Name</string>
     <string name="barcode">Barcode</string>
     <string name="auto_generate">Auto generate</string>
@@ -20,9 +19,10 @@
     <string name="product_info">Product info</string>
     <string name="please_fill_in_all_the_boxes">Please fill in all the boxes!</string>
     <string name="successfully_saved">Successfully saved!</string>
-    <string name="barcode_limit">The barcode must not be less than 13 digits!</string>
+    <string name="barcode_fill">Please scan the barcode or use generation!</string>
     <string name="view">View</string>
     <string name="no_app_view_excel">No Application available to view Excel</string>
     <string name="entry_date">Entry date</string>
     <string name="no_product_found_this_barcode">No product found with this barcode!</string>
+    <string name="barcode_registered">This barcode has been registered!</string>
 </resources>

@@ -28,6 +28,7 @@ import uz.dev_abubakir_khakimov.product_controller.utils.MediaSaveManager
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStream
+import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -93,9 +94,9 @@ class MoreInfoFragment : DialogFragment() {
         binding.barcode.text = product.barcode
         binding.name.text = getConcatenateStr(getString(R.string.name), product.name)
         binding.count.text = getConcatenateStr(getString(R.string.count), product.count.toString())
-        binding.entryPrice.text = getConcatenateStr(getString(R.string.entry_price), product.entryPrice)
-        binding.sellingPrice.text = getConcatenateStr(getString(R.string.selling_price), product.sellingPrice)
-        binding.percent.text = getConcatenateStr(getString(R.string.percent), product.percent.toString())
+        binding.entryPrice.text = getConcatenateStr(getString(R.string.entry_price), getDecimalFormat(product.entryPrice))
+        binding.sellingPrice.text = getConcatenateStr(getString(R.string.selling_price), getDecimalFormat(product.sellingPrice))
+        binding.percent.text = getConcatenateStr(getString(R.string.percent), getDecimalFormat(product.percent))
         binding.term.text = getConcatenateStr(getString(R.string.term), product.term)
         binding.firmName.text = getConcatenateStr(getString(R.string.firm), product.firm)
         binding.entryDate.text = getConcatenateStr(getString(R.string.entry_date), getStringDate(product.entryDate))
@@ -107,6 +108,10 @@ class MoreInfoFragment : DialogFragment() {
 
     private fun getConcatenateStr(title: String, info: String):String{
         return "$title: $info"
+    }
+
+    private fun getDecimalFormat(it: Double): String{
+        return DecimalFormat("#.###").format(it)
     }
 
     companion object {

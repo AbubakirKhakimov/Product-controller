@@ -8,7 +8,6 @@
     <string name="englishLanguage">Ingliz</string>
     <string name="russianLanguage">Rus</string>
     <string name="uzbekLanguage">O\'zbek</string>
-    <string name="change_language">Tilni o\'zgartirish</string>
     <string name="name">Nomi</string>
     <string name="barcode">Shtrix-kod</string>
     <string name="auto_generate">Avtomatik yaratish</string>
@@ -21,9 +20,10 @@
     <string name="product_info">Mahsulot haqida</string>
     <string name="please_fill_in_all_the_boxes">Iltimos, barcha kataklarni to\'ldiring!</string>
     <string name="successfully_saved">Muvaffaqiyatli saqlandi!</string>
-    <string name="barcode_limit">Shtrix-kod 13 ta raqamdan kam bo\'lmasligi kerak!</string>
+    <string name="barcode_fill">Iltimos shtrix kodni skaner qiling yoki generatsiyadan foydalaning!</string>
     <string name="view">Ko\'rish</string>
     <string name="no_app_view_excel">Excelni ko\'rish uchun dastur mavjud emas</string>
     <string name="entry_date">Kirish sanasi</string>
     <string name="no_product_found_this_barcode">Bunday shtrix-kodli hech qanday mahsulot topilmadi!</string>
+    <string name="barcode_registered">Ushbu shtrix-kod ro\'yxatga olingan!</string>
 </resources>

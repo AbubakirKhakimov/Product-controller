@@ -23,7 +23,11 @@
         android:id="@+id/addProductFragment"
         android:name="uz.dev_abubakir_khakimov.product_controller.fragments.AddProductFragment"
         android:label="fragment_add_product"
-        tools:layout="@layout/fragment_add_product" />
+        tools:layout="@layout/fragment_add_product" >
+        <action
+            android:id="@+id/action_addProductFragment_to_scannerFragment"
+            app:destination="@id/scannerFragment" />
+    </fragment>
     <fragment
         android:id="@+id/scannerFragment"
         android:name="uz.dev_abubakir_khakimov.product_controller.fragments.ScannerFragment"

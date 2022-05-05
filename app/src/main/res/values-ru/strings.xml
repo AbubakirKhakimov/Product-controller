@@ -8,7 +8,6 @@
     <string name="englishLanguage">Английский</string>
     <string name="russianLanguage">Русский</string>
     <string name="uzbekLanguage">Узбекский</string>
-    <string name="change_language">Изменение языка</string>
     <string name="name">Имя</string>
     <string name="barcode">Штрих-код</string>
     <string name="auto_generate">Автоматически генерировать</string>
@@ -21,9 +20,10 @@
     <string name="product_info">Информация о продукте</string>
     <string name="please_fill_in_all_the_boxes">Пожалуйста, заполните все поля!</string>
     <string name="successfully_saved">Успешно сохранено!</string>
-    <string name="barcode_limit">Штрих-код должен быть не менее 13 цифр!</string>
+    <string name="barcode_fill">Пожалуйста, отсканируйте штрих-код или используйте генерацию!</string>
     <string name="view">Просмотр</string>
     <string name="no_app_view_excel">Нет доступных приложений для просмотра Excel</string>
     <string name="entry_date">Дата ввода</string>
     <string name="no_product_found_this_barcode">Товар с таким штрих-кодом не найден!</string>
+    <string name="barcode_registered">Такой штрих-код зарегистрирован!</string>
 </resources>

@@ -1,6 +1,5 @@
 package uz.dev_abubakir_khakimov.product_controller.fragments
 
-import android.Manifest
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
@@ -9,9 +8,9 @@ import android.os.Vibrator
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResult
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
@@ -31,10 +30,14 @@ class ScannerFragment : Fragment(), ZBarScannerView.ResultHandler {
     }
     var snackBar: Snackbar? = null
 
+    var fromAddProductFragment = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         initObservers()
+
+        fromAddProductFragment = arguments?.getBoolean("fromAddProductFragment", false)!!
     }
 
     override fun onCreateView(
@@ -105,7 +108,12 @@ class ScannerFragment : Fragment(), ZBarScannerView.ResultHandler {
     }
 
     override fun handleResult(result: Result?) {
-        viewModel.getProductEqualThisBarcode(result!!.contents)
+        if (fromAddProductFragment){
+            setFragmentResult("result", bundleOf("barcode" to result!!.contents))
+            findNavController().popBackStack()
+        }else {
+            viewModel.getProductEqualThisBarcode(result!!.contents)
+        }
     }
 
     private fun vibrate(){

@@ -3,6 +3,7 @@ package uz.dev_abubakir_khakimov.product_controller.fragments
 import android.Manifest
 import android.R.attr.mimeType
 import android.app.AlertDialog
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -13,9 +14,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.MimeTypeMap
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.os.bundleOf
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -144,11 +147,15 @@ class HomeFragment : Fragment(), ProductsListAdapterCallBack {
         val mimeType =
             myMime.getMimeTypeFromExtension(MimeTypeMap.getFileExtensionFromUrl(apkURI.toString())) //It will return the mimetype
 
-
         intent.setDataAndType(apkURI, mimeType)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        startActivity(intent)
+
+        try {
+            startActivity(intent)
+        }catch (e: ActivityNotFoundException){
+            Toast.makeText(requireActivity(), getString(R.string.no_app_view_excel), Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun readAllProducts(){
@@ -172,7 +179,9 @@ class HomeFragment : Fragment(), ProductsListAdapterCallBack {
 
     private fun showScanner(){
         if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED){
-            findNavController().navigate(R.id.action_homeFragment_to_scannerFragment)
+            findNavController().navigate(R.id.action_homeFragment_to_scannerFragment, bundleOf(
+                "fromAddProductFragment" to false
+            ))
         }else{
             requestCameraPermission()
         }
@@ -180,7 +189,9 @@ class HomeFragment : Fragment(), ProductsListAdapterCallBack {
 
     private val cameraPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()){
         if (it){
-            findNavController().navigate(R.id.action_homeFragment_to_scannerFragment)
+            findNavController().navigate(R.id.action_homeFragment_to_scannerFragment, bundleOf(
+                "fromAddProductFragment" to false
+            ))
         }
     }
 

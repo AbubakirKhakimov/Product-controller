@@ -12,6 +12,7 @@ import org.apache.poi.xssf.usermodel.XSSFColor
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import uz.dev_abubakir_khakimov.product_controller.models.Product
 import java.io.*
+import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -51,29 +52,33 @@ class ExcelManager(val context: Context, val productsList: ArrayList<Product>) {
     }
 
     private fun addRowTitle(row: Row, cellStyle: CellStyle){
-        createCell(row, 0, "Id", cellStyle)
-        createCell(row, 1, "Name", cellStyle)
-        createCell(row, 2, "Count", cellStyle)
-        createCell(row, 3, "Entry price", cellStyle)
-        createCell(row, 4, "Selling price", cellStyle)
-        createCell(row, 5, "Percent", cellStyle)
-        createCell(row, 6, "Term", cellStyle)
-        createCell(row, 7, "Firm", cellStyle)
-        createCell(row, 8, "Barcode", cellStyle)
-        createCell(row, 9, "Entry date", cellStyle)
+        createCell(row, 0, "id", cellStyle)
+        createCell(row, 1, "nomi", cellStyle)
+        createCell(row, 2, "soni", cellStyle)
+        createCell(row, 3, "kelgannarx", cellStyle)
+        createCell(row, 4, "foizi", cellStyle)
+        createCell(row, 5, "sotilishnarxi", cellStyle)
+        createCell(row, 6, "muddati", cellStyle)
+        createCell(row, 7, "firma", cellStyle)
+        createCell(row, 8, "shtrixraqam", cellStyle)
+        createCell(row, 9, "kelgansana", cellStyle)
     }
 
     private fun addRowData(row: Row, product: Product){
         createCell(row, 0, product.id.toString())
         createCell(row, 1, product.name)
         createCell(row, 2, product.count.toString())
-        createCell(row, 3, product.entryPrice)
-        createCell(row, 4, product.sellingPrice)
-        createCell(row, 5, product.percent.toString())
+        createCell(row, 3, getDecimalFormat(product.entryPrice))
+        createCell(row, 4, getDecimalFormat(product.percent))
+        createCell(row, 5, getDecimalFormat(product.sellingPrice))
         createCell(row, 6, product.term)
         createCell(row, 7, product.firm)
         createCell(row, 8, product.barcode)
         createCell(row, 9, getStringDate(product.entryDate))
+    }
+
+    private fun getDecimalFormat(it: Double): String{
+        return DecimalFormat("#.###").format(it)
     }
 
     private fun getStringDate(dateMillis: Long):String{

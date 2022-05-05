@@ -1,5 +1,7 @@
 package uz.dev_abubakir_khakimov.product_controller.fragments
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
@@ -7,8 +9,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
@@ -19,6 +25,7 @@ import uz.dev_abubakir_khakimov.product_controller.models.MainViewModel
 import uz.dev_abubakir_khakimov.product_controller.models.Product
 import uz.dev_abubakir_khakimov.product_controller.utils.BarcodeManager
 import java.io.*
+import java.text.DecimalFormat
 import java.util.*
 
 
@@ -29,7 +36,9 @@ class AddProductFragment : Fragment() {
     lateinit var barcodeManager: BarcodeManager
 
     var bitmap: Bitmap? = null
-    var generatedBarcode: String = ""
+    var thisBarcode: String = ""
+    var thisGeneratedBarcode = false
+    var sellingPrice: Double = 0.0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,36 +68,82 @@ class AddProductFragment : Fragment() {
             saveProduct()
         }
 
-        binding.barcode.addTextChangedListener {
-            if (it.toString().length == 13){
-                createImageByBarcode(it.toString())
-            }else{
-                bitmap = null
-                binding.barcodeImage.setImageResource(R.drawable.ic_barcode_icon)
-            }
-
-            binding.barcodeLayout.error = null
+        binding.scanner.setOnClickListener {
+            checkPermission()
         }
 
         binding.autoGenerate.setOnClickListener {
             generateBarcode()
         }
 
+        binding.entryPrice.addTextChangedListener {
+            generateSellingPrice()
+        }
+
+        binding.percent.addTextChangedListener {
+            generateSellingPrice()
+        }
+
     }
 
     private fun initObservers(){
         viewModel.compareResultData.observe(this){
-            if (it == null){
-                binding.barcode.setText(generatedBarcode)
-            }else{
+            compareResult(it)
+        }
+    }
+
+    private fun compareResult(it: Product?){
+        if (it == null){
+            thisGeneratedBarcode = false
+            binding.barcode.setText(thisBarcode)
+            createImageByBarcode(thisBarcode)
+            binding.barcodeLayout.error = null
+        }else{
+            if (thisGeneratedBarcode) {
                 generateBarcode()
+            }else{
+                Toast.makeText(requireActivity(), getString(R.string.barcode_registered), Toast.LENGTH_SHORT).show()
+                binding.barcode.text?.clear()
+                bitmap = null
+                binding.barcodeImage.postDelayed({
+                    binding.barcodeImage.setImageResource(R.drawable.ic_barcode_icon)
+                }, 0)
             }
         }
     }
 
+    private fun generateSellingPrice(){
+        val entryPrice = binding.entryPrice.text.toString().toDoubleOrNull()
+        val percent = binding.percent.text.toString().toDoubleOrNull()
+
+        if (entryPrice != null && percent != null) {
+            sellingPrice = entryPrice + (entryPrice * percent / 100)
+            binding.sellingPrice.setText(getDecimalFormat(sellingPrice))
+        }else{
+            sellingPrice = 0.0
+            binding.sellingPrice.text?.clear()
+        }
+    }
+
+    private fun getDecimalFormat(it: Double): String{
+        return DecimalFormat("#.###").format(it)
+    }
+
+    private fun showScanner(){
+        setFragmentResultListener("result"){ requestKey, bundle ->
+            thisBarcode = bundle.getString("barcode")!!
+            viewModel.getProductEqualThisBarcode(thisBarcode)
+        }
+
+        findNavController().navigate(R.id.action_addProductFragment_to_scannerFragment, bundleOf(
+            "fromAddProductFragment" to true
+        ))
+    }
+
     private fun generateBarcode(){
-        generatedBarcode = barcodeManager.generateBarcode()
-        viewModel.getProductEqualThisBarcode(generatedBarcode)
+        thisBarcode = barcodeManager.generateBarcode()
+        thisGeneratedBarcode = true
+        viewModel.getProductEqualThisBarcode(thisBarcode)
     }
 
     private fun saveProduct(){
@@ -99,9 +154,9 @@ class AddProductFragment : Fragment() {
                 0,
                 binding.name.text.toString().trim(),
                 binding.count.text.toString().toInt(),
-                binding.entryPrice.text.toString().trim(),
+                binding.entryPrice.text.toString().toDouble(),
                 binding.percent.text.toString().toDouble(),
-                binding.sellingPrice.text.toString().trim(),
+                sellingPrice,
                 binding.term.text.toString().trim(),
                 binding.firm.text.toString().trim(),
                 binding.barcode.text.toString(),
@@ -126,12 +181,10 @@ class AddProductFragment : Fragment() {
 
     private fun checkForIsEmpty(product: Product):Boolean{
         return product.name.isNotEmpty() &&
-                product.entryPrice.isNotEmpty() &&
-                product.sellingPrice.isNotEmpty() &&
                 product.term.isNotEmpty() &&
                 product.firm.isNotEmpty() &&
                 if (bitmap != null) true else {
-                    binding.barcodeLayout.error = getString(R.string.barcode_limit)
+                    binding.barcodeLayout.error = getString(R.string.barcode_fill)
                     false
                 }
     }
@@ -143,6 +196,24 @@ class AddProductFragment : Fragment() {
         }catch (e: WriterException){
             e.printStackTrace()
         }
+    }
+
+    private fun checkPermission(){
+        if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED){
+            showScanner()
+        }else{
+            requestCameraPermission()
+        }
+    }
+
+    private val cameraPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()){
+        if (it){
+            showScanner()
+        }
+    }
+
+    private fun requestCameraPermission(){
+        cameraPermission.launch(Manifest.permission.CAMERA)
     }
 
     @Throws(IOException::class)
