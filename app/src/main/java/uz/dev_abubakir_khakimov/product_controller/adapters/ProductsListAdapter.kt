@@ -1,6 +1,7 @@
 package uz.dev_abubakir_khakimov.product_controller.adapters
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -12,6 +13,7 @@ import kotlin.collections.ArrayList
 
 interface ProductsListAdapterCallBack{
     fun itemSelectedListener(position: Int)
+    fun moreSelectedListener(position: Int, view: View)
 }
 
 class ProductsListAdapter(val productsList: ArrayList<Product>, val productsListAdapterCallBack: ProductsListAdapterCallBack)
@@ -32,6 +34,10 @@ class ProductsListAdapter(val productsList: ArrayList<Product>, val productsList
 
         holder.binding.root.setOnClickListener {
             productsListAdapterCallBack.itemSelectedListener(position)
+        }
+
+        holder.binding.moreFunc.setOnClickListener {
+            productsListAdapterCallBack.moreSelectedListener(position, it)
         }
     }
 

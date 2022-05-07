@@ -31,27 +31,25 @@ class ExcelManager(val context: Context, val productsList: ArrayList<Product>) {
         val sheet: Sheet = workbook.createSheet(SHEET_NAME)
 
         //Create Header Cell Style
-        val cellStyle = getHeaderStyle(workbook)
+//        val cellStyle = getHeaderStyle(workbook)
 
         //Creating sheet header row
         createSheetHeader(sheet)
 
         //Adding data to the sheet
-        addData(sheet, cellStyle)
+        addData(sheet)
 
         return workbook
     }
 
-    private fun addData(sheet: Sheet, cellStyle: CellStyle) {
-        addRowTitle(sheet.createRow(0), cellStyle)
-
+    private fun addData(sheet: Sheet) {
         productsList.forEachIndexed { index, product ->
-            val row = sheet.createRow(index+1)
+            val row = sheet.createRow(index)
             addRowData(row, product)
         }
     }
 
-    private fun addRowTitle(row: Row, cellStyle: CellStyle){
+    /** private fun addRowTitle(row: Row, cellStyle: CellStyle){
         createCell(row, 0, "id", cellStyle)
         createCell(row, 1, "nomi", cellStyle)
         createCell(row, 2, "soni", cellStyle)
@@ -62,7 +60,7 @@ class ExcelManager(val context: Context, val productsList: ArrayList<Product>) {
         createCell(row, 7, "firma", cellStyle)
         createCell(row, 8, "shtrixraqam", cellStyle)
         createCell(row, 9, "kelgansana", cellStyle)
-    }
+    } **/
 
     private fun addRowData(row: Row, product: Product){
         createCell(row, 0, product.id.toString())
@@ -82,7 +80,7 @@ class ExcelManager(val context: Context, val productsList: ArrayList<Product>) {
     }
 
     private fun getStringDate(dateMillis: Long):String{
-        return SimpleDateFormat("dd.MM.yyyy").format(Date(dateMillis))
+        return SimpleDateFormat("yyyy-MM-dd").format(Date(dateMillis))
     }
 
     private fun createCell(row: Row, columnIndex: Int, value: String?, cellStyle: CellStyle? = null) {
@@ -91,7 +89,7 @@ class ExcelManager(val context: Context, val productsList: ArrayList<Product>) {
         cell?.cellStyle = cellStyle
     }
 
-    private fun getHeaderStyle(workbook: Workbook): CellStyle {
+    /** private fun getHeaderStyle(workbook: Workbook): CellStyle {
 
         //Cell style for header row
         val cellStyle: CellStyle = workbook.createCellStyle()
@@ -112,7 +110,7 @@ class ExcelManager(val context: Context, val productsList: ArrayList<Product>) {
         cellStyle.setAlignment(HorizontalAlignment.CENTER)
 
         return cellStyle
-    }
+    } **/
 
     private fun createSheetHeader(sheet: Sheet) {
         //setHeaderStyle is a custom function written below to add header style

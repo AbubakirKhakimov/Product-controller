@@ -34,16 +34,16 @@ class AddProductFragment : Fragment() {
     lateinit var binding: FragmentAddProductBinding
     lateinit var viewModel: MainViewModel
     lateinit var barcodeManager: BarcodeManager
+    var product: Product? = null
 
     var bitmap: Bitmap? = null
     var thisBarcode: String = ""
     var thisGeneratedBarcode = false
-    var sellingPrice: Double = 0.0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
-        initObservers()
+        product = arguments?.getSerializable("selectedProduct") as Product?
     }
 
     override fun onCreateView(
@@ -60,6 +60,8 @@ class AddProductFragment : Fragment() {
 
         barcodeManager = BarcodeManager(420, 210)
 
+        checkEditOrAddMode()
+
         binding.backStack.setOnClickListener {
             findNavController().popBackStack()
         }
@@ -68,8 +70,10 @@ class AddProductFragment : Fragment() {
             saveProduct()
         }
 
-        binding.scanner.setOnClickListener {
-            checkPermission()
+        binding.barcodeImage.setOnClickListener {
+            if (product == null) {
+                checkPermission()
+            }
         }
 
         binding.autoGenerate.setOnClickListener {
@@ -86,9 +90,23 @@ class AddProductFragment : Fragment() {
 
     }
 
-    private fun initObservers(){
-        viewModel.compareResultData.observe(this){
-            compareResult(it)
+    private fun checkEditOrAddMode(){
+        if (product != null){
+            binding.barcode.setText(product!!.barcode)
+            binding.name.setText(product!!.name)
+            binding.count.setText(product!!.count.toString())
+            binding.entryPrice.setText(getDecimalFormat(product!!.entryPrice))
+            binding.percent.setText(getDecimalFormat(product!!.percent))
+            binding.sellingPrice.setText(getDecimalFormat(product!!.sellingPrice))
+            binding.term.setText(product!!.term)
+            binding.firm.setText(product!!.firm)
+            Glide.with(requireActivity()).load(product!!.barcodeImagePath).into(binding.barcodeImage)
+            binding.autoGenerate.visibility = View.GONE
+            binding.title.text = getString(R.string.edit_product)
+        }else{
+            if(bitmap != null){
+                Glide.with(requireActivity()).load(bitmap).into(binding.barcodeImage)
+            }
         }
     }
 
@@ -102,12 +120,8 @@ class AddProductFragment : Fragment() {
             if (thisGeneratedBarcode) {
                 generateBarcode()
             }else{
-                Toast.makeText(requireActivity(), getString(R.string.barcode_registered), Toast.LENGTH_SHORT).show()
-                binding.barcode.text?.clear()
-                bitmap = null
-                binding.barcodeImage.postDelayed({
-                    binding.barcodeImage.setImageResource(R.drawable.ic_barcode_icon)
-                }, 0)
+                product = it
+                checkEditOrAddMode()
             }
         }
     }
@@ -117,22 +131,23 @@ class AddProductFragment : Fragment() {
         val percent = binding.percent.text.toString().toDoubleOrNull()
 
         if (entryPrice != null && percent != null) {
-            sellingPrice = entryPrice + (entryPrice * percent / 100)
+            val sellingPrice = entryPrice + (entryPrice * percent / 100)
             binding.sellingPrice.setText(getDecimalFormat(sellingPrice))
         }else{
-            sellingPrice = 0.0
             binding.sellingPrice.text?.clear()
         }
     }
 
     private fun getDecimalFormat(it: Double): String{
-        return DecimalFormat("#.###").format(it)
+        return DecimalFormat("#.###").format(it).replace(",", ".")
     }
 
     private fun showScanner(){
         setFragmentResultListener("result"){ requestKey, bundle ->
             thisBarcode = bundle.getString("barcode")!!
-            viewModel.getProductEqualThisBarcode(thisBarcode)
+            viewModel.getProductEqualThisBarcode(thisBarcode).observe(viewLifecycleOwner){
+                compareResult(it)
+            }
         }
 
         findNavController().navigate(R.id.action_addProductFragment_to_scannerFragment, bundleOf(
@@ -143,20 +158,22 @@ class AddProductFragment : Fragment() {
     private fun generateBarcode(){
         thisBarcode = barcodeManager.generateBarcode()
         thisGeneratedBarcode = true
-        viewModel.getProductEqualThisBarcode(thisBarcode)
+        viewModel.getProductEqualThisBarcode(thisBarcode).observe(viewLifecycleOwner){
+            compareResult(it)
+        }
     }
 
     private fun saveProduct(){
-        val product: Product
+        val newProduct: Product
 
         try {
-            product = Product(
-                0,
+            newProduct = Product(
+                product?.id ?: 0,
                 binding.name.text.toString().trim(),
                 binding.count.text.toString().toInt(),
                 binding.entryPrice.text.toString().toDouble(),
                 binding.percent.text.toString().toDouble(),
-                sellingPrice,
+                binding.sellingPrice.text.toString().toDouble(),
                 binding.term.text.toString().trim(),
                 binding.firm.text.toString().trim(),
                 binding.barcode.text.toString(),
@@ -168,22 +185,38 @@ class AddProductFragment : Fragment() {
             return
         }
 
-        if (checkForIsEmpty(product)){
-            product.barcodeImagePath = saveBitmap(bitmap!!, "${product.barcode}_${product.name}")
-
-            viewModel.insertProduct(product)
-            Toast.makeText(requireActivity(), getString(R.string.successfully_saved), Toast.LENGTH_SHORT).show()
-            findNavController().popBackStack()
+        if (checkForIsEmpty(newProduct)){
+            if (product == null){
+                addProduct(newProduct)
+            }else{
+                editProduct(newProduct)
+            }
         }else{
             Toast.makeText(requireActivity(), getString(R.string.please_fill_in_all_the_boxes), Toast.LENGTH_SHORT).show()
         }
     }
 
-    private fun checkForIsEmpty(product: Product):Boolean{
-        return product.name.isNotEmpty() &&
-                product.term.isNotEmpty() &&
-                product.firm.isNotEmpty() &&
-                if (bitmap != null) true else {
+    private fun addProduct(newProduct: Product){
+        newProduct.barcodeImagePath = saveBitmap(bitmap!!, "${newProduct.barcode}_${newProduct.name}")
+
+        viewModel.insertProduct(newProduct)
+        Toast.makeText(requireActivity(), getString(R.string.successfully_saved), Toast.LENGTH_SHORT).show()
+        findNavController().popBackStack()
+    }
+
+    private fun editProduct(newProduct: Product){
+        newProduct.barcodeImagePath = product!!.barcodeImagePath
+
+        viewModel.editProduct(newProduct)
+        Toast.makeText(requireActivity(), getString(R.string.successfully_saved), Toast.LENGTH_SHORT).show()
+        findNavController().popBackStack()
+    }
+
+    private fun checkForIsEmpty(newProduct: Product):Boolean{
+        return newProduct.name.isNotEmpty() &&
+                newProduct.term.isNotEmpty() &&
+                newProduct.firm.isNotEmpty() &&
+                if (bitmap != null || product != null) true else {
                     binding.barcodeLayout.error = getString(R.string.barcode_fill)
                     false
                 }

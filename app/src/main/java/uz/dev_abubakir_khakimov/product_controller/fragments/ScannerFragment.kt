@@ -35,8 +35,6 @@ class ScannerFragment : Fragment(), ZBarScannerView.ResultHandler {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
-        initObservers()
-
         fromAddProductFragment = arguments?.getBoolean("fromAddProductFragment", false)!!
     }
 
@@ -60,18 +58,6 @@ class ScannerFragment : Fragment(), ZBarScannerView.ResultHandler {
             initScanning()
         }
 
-    }
-
-    private fun initObservers() {
-        viewModel.compareResultData.observe(this){
-            vibrate()
-
-            if (it == null){
-                showSnackBar(getString(R.string.no_product_found_this_barcode), null)
-            }else{
-                showSnackBar(it.name, it)
-            }
-        }
     }
 
     private fun showSnackBar(message: String, product: Product?){
@@ -112,7 +98,19 @@ class ScannerFragment : Fragment(), ZBarScannerView.ResultHandler {
             setFragmentResult("result", bundleOf("barcode" to result!!.contents))
             findNavController().popBackStack()
         }else {
-            viewModel.getProductEqualThisBarcode(result!!.contents)
+            viewModel.getProductEqualThisBarcode(result!!.contents).observe(viewLifecycleOwner){
+                compareResult(it)
+            }
+        }
+    }
+
+    private fun compareResult(it: Product?) {
+        vibrate()
+
+        if (it == null){
+            showSnackBar(getString(R.string.no_product_found_this_barcode), null)
+        }else{
+            showSnackBar(it.name, it)
         }
     }
 

@@ -25,4 +25,12 @@
     <string name="entry_date">Entry date</string>
     <string name="no_product_found_this_barcode">No product found with this barcode!</string>
     <string name="barcode_registered">This barcode has been registered!</string>
+    <string name="products_list">Products list</string>
+    <string name="sort_by_barcode">Sort by barcode</string>
+    <string name="sort_by_name">Sort by name</string>
+    <string name="edit">Edit</string>
+    <string name="remove">Remove</string>
+    <string name="successfully_removed">Successfully removed!</string>
+    <string name="edit_product">Edit product</string>
+    <string name="sort_by_date">Sort by date</string>
 </resources>

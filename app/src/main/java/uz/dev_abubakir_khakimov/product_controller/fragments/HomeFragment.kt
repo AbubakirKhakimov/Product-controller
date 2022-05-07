@@ -14,6 +14,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.MimeTypeMap
+import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
@@ -49,7 +50,6 @@ class HomeFragment : Fragment(), ProductsListAdapterCallBack {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
-        initObservers()
     }
 
     override fun onCreateView(
@@ -69,38 +69,97 @@ class HomeFragment : Fragment(), ProductsListAdapterCallBack {
 
         readAllProducts()
 
-        binding.openDrawer.setOnClickListener {
-            binding.root.openDrawer(GravityCompat.START)
+        binding.exportExcel.setOnClickListener {
+            if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
+                exportExcel()
+            }else{
+                requestStoragePermission()
+            }
         }
 
-        binding.navigationView.setNavigationItemSelectedListener {
+        binding.sortMode.setOnClickListener {
+            showSortMenu()
+        }
+
+        binding.backStack.setOnClickListener {
+            findNavController().popBackStack()
+        }
+
+    }
+
+    private fun showSortMenu(){
+        val popupMenu = PopupMenu(requireActivity(), binding.sortMode)
+        popupMenu.inflate(R.menu.sort_popup_menu)
+        popupMenu.setOnMenuItemClickListener {
             when(it.itemId){
-                R.id.scanner -> {
-                    showScanner()
-                }
-                R.id.add_product -> {
-                    findNavController().navigate(R.id.action_homeFragment_to_addProductFragment)
-                }
-                R.id.export_excel -> {
-                    if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
-                        exportExcel()
-                    }else{
-                        requestStoragePermission()
+                R.id.sortByBarcode -> {
+                    viewModel.sortByBarcode().observe(viewLifecycleOwner){
+                        updateUI(it)
                     }
                 }
-                R.id.change_language -> {
-                    ChangeLanguageFragment().show(childFragmentManager, "tag")
+                R.id.sortByName -> {
+                    viewModel.sortByName().observe(viewLifecycleOwner){
+                        updateUI(it)
+                    }
+                }
+                R.id.sortByDate -> {
+                    viewModel.sortByDate().observe(viewLifecycleOwner){
+                        updateUI(it)
+                    }
                 }
             }
-
-            binding.root.closeDrawers()
             true
         }
+        popupMenu.show()
+    }
 
-        binding.scanner.setOnClickListener {
-            showScanner()
+    private fun updateUI(it: List<Product>){
+        productsList.apply {
+            clear()
+            addAll(it)
         }
 
+        productsListAdapter.notifyDataSetChanged()
+    }
+
+    private fun readAllProducts(){
+        viewModel.readAllProducts().observe(viewLifecycleOwner){
+            updateUI(it)
+        }
+    }
+
+    override fun itemSelectedListener(position: Int) {
+        MoreInfoFragment.newInstance(productsList[position]).show(childFragmentManager, "tag")
+    }
+
+    override fun moreSelectedListener(position: Int, view: View) {
+        val popupMenu = PopupMenu(requireActivity(), view)
+        popupMenu.inflate(R.menu.more_func_menu)
+        popupMenu.setOnMenuItemClickListener {
+            when(it.itemId){
+                R.id.edit -> {
+                    findNavController().navigate(R.id.action_homeFragment_to_addProductFragment, bundleOf(
+                        "selectedProduct" to productsList[position]
+                    ))
+                }
+                R.id.remove -> {
+                    removeProduct(position)
+                }
+            }
+            true
+        }
+        popupMenu.show()
+    }
+
+    private fun removeProduct(position: Int){
+        viewModel.removeProduct(productsList[position])
+        deleteImage(productsList[position].barcodeImagePath)
+
+        productsList.removeAt(position)
+        productsListAdapter.notifyItemRemoved(position)
+        productsListAdapter.notifyItemRangeChanged(0, productsList.size)
+
+        Toast.makeText(requireActivity(), getString(R.string.successfully_removed), Toast.LENGTH_SHORT).show()
     }
 
     private fun exportExcel(){
@@ -158,47 +217,6 @@ class HomeFragment : Fragment(), ProductsListAdapterCallBack {
         }
     }
 
-    private fun readAllProducts(){
-        viewModel.readAllProducts()
-    }
-
-    private fun initObservers() {
-        viewModel.readAllProductsData.observe(this){
-            productsList.apply {
-                clear()
-                addAll(it)
-            }
-
-            productsListAdapter.notifyDataSetChanged()
-        }
-    }
-
-    override fun itemSelectedListener(position: Int) {
-        MoreInfoFragment.newInstance(productsList[position]).show(childFragmentManager, "tag")
-    }
-
-    private fun showScanner(){
-        if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED){
-            findNavController().navigate(R.id.action_homeFragment_to_scannerFragment, bundleOf(
-                "fromAddProductFragment" to false
-            ))
-        }else{
-            requestCameraPermission()
-        }
-    }
-
-    private val cameraPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()){
-        if (it){
-            findNavController().navigate(R.id.action_homeFragment_to_scannerFragment, bundleOf(
-                "fromAddProductFragment" to false
-            ))
-        }
-    }
-
-    private fun requestCameraPermission(){
-        cameraPermission.launch(Manifest.permission.CAMERA)
-    }
-
     private val storagePermission = registerForActivityResult(ActivityResultContracts.RequestPermission()){
         if (it){
             exportExcel()
@@ -207,6 +225,13 @@ class HomeFragment : Fragment(), ProductsListAdapterCallBack {
 
     private fun requestStoragePermission(){
         storagePermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    }
+
+    private fun deleteImage(path: String){
+        val file = File(path)
+        if (file.exists()){
+            file.delete()
+        }
     }
 
 }

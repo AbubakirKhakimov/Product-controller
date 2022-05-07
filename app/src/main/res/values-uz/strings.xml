@@ -26,4 +26,12 @@
     <string name="entry_date">Kirish sanasi</string>
     <string name="no_product_found_this_barcode">Bunday shtrix-kodli hech qanday mahsulot topilmadi!</string>
     <string name="barcode_registered">Ushbu shtrix-kod ro\'yxatga olingan!</string>
+    <string name="products_list">Mahsulotlar ro\'yxati</string>
+    <string name="sort_by_barcode">Shtrix-kod bo\'yicha saralash</string>
+    <string name="sort_by_name">Nomi bo\'yicha saralash</string>
+    <string name="edit">Tahrirlash</string>
+    <string name="remove">O\'chirish</string>
+    <string name="successfully_removed">Muvaffaqiyatli o\'chirildi!</string>
+    <string name="edit_product">Mahsulotni tahrirlash</string>
+    <string name="sort_by_date">Sana bo\'yicha saralash</string>
 </resources>

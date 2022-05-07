@@ -3,6 +3,7 @@ package uz.dev_abubakir_khakimov.product_controller.models
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import uz.dev_abubakir_khakimov.product_controller.dao.ProductDao
 import uz.dev_abubakir_khakimov.product_controller.database.ProductDatabase
@@ -11,19 +12,36 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
 
     private val productDao: ProductDao = ProductDatabase.getInstance(application).productDao()
 
-    val readAllProductsData = MutableLiveData<List<Product>>()
-    val compareResultData = MutableLiveData<Product?>()
-
-    fun readAllProducts(){
-        readAllProductsData.value = productDao.getAllProducts()
+    fun readAllProducts(): LiveData<List<Product>> {
+        return productDao.getAllProducts()
     }
 
-    fun getProductEqualThisBarcode(barcode: String){
-        compareResultData.value = productDao.getProductEqualThisBarcode(barcode)
+    fun getProductEqualThisBarcode(barcode: String): LiveData<Product?> {
+        return productDao.getProductEqualThisBarcode(barcode)
     }
 
     fun insertProduct(product: Product){
         productDao.insertProduct(product)
+    }
+
+    fun editProduct(product: Product){
+        productDao.editProduct(product)
+    }
+
+    fun removeProduct(product: Product){
+        productDao.removeProduct(product)
+    }
+
+    fun sortByBarcode():LiveData<List<Product>>{
+        return productDao.sortByBarcode()
+    }
+
+    fun sortByName():LiveData<List<Product>>{
+        return productDao.sortByName()
+    }
+
+    fun sortByDate():LiveData<List<Product>>{
+        return productDao.sortByDate()
     }
 
 }

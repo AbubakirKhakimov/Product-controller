@@ -13,7 +13,7 @@
         android:paddingTop="16dp"
         android:paddingBottom="16dp"
         android:text="@string/languagesListName"
-        android:textColor="#4CAF50"
+        android:textColor="@color/main_color"
         android:textSize="20sp"
         android:textStyle="bold" />
 

@@ -26,4 +26,12 @@
     <string name="entry_date">Дата ввода</string>
     <string name="no_product_found_this_barcode">Товар с таким штрих-кодом не найден!</string>
     <string name="barcode_registered">Такой штрих-код зарегистрирован!</string>
+    <string name="products_list">Список продуктов</string>
+    <string name="sort_by_barcode">Сортировать по штрих-коду</string>
+    <string name="sort_by_name">Сортировать по имени</string>
+    <string name="edit">Редактировать</string>
+    <string name="remove">Удалить</string>
+    <string name="successfully_removed">Успешно удалено!</string>
+    <string name="edit_product">Изменить продукт</string>
+    <string name="sort_by_date">Сортировать по дате</string>
 </resources>
