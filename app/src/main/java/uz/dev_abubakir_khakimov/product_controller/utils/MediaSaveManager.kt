@@ -2,19 +2,21 @@ package uz.dev_abubakir_khakimov.product_controller.utils
 
 import android.content.ContentValues
 import android.content.Context
-import android.graphics.Bitmap
+import android.graphics.*
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
-import android.util.Log
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStream
 
+
 class MediaSaveManager(val context: Context) {
 
-    fun saveMediaToStorage(bitmap: Bitmap, fileName: String): File {
+    fun saveMediaToStorage(bitmap: Bitmap, barcode: String, productName: String): File {
+        val fileName = "${barcode}_${productName}.jpg"
+
         //Output stream
         var fos: OutputStream? = null
         val imageFile = checkFileExists(fileName)
@@ -47,7 +49,8 @@ class MediaSaveManager(val context: Context) {
 
         fos?.use {
             //Finally writing the bitmap to the output stream that we opened
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it)
+            getChangedBitmap(bitmap, barcode, productName)
+                .compress(Bitmap.CompressFormat.JPEG, 100, it)
         }
 
         return imageFile
@@ -67,6 +70,33 @@ class MediaSaveManager(val context: Context) {
         }
 
         return imageFile
+    }
+
+    //barcode size: 420 x 210
+    private fun getChangedBitmap(oldBitmap: Bitmap, barcode: String, productName: String): Bitmap{
+        val newBitmap = Bitmap.createBitmap(oldBitmap.width, oldBitmap.height+60, oldBitmap.config)
+        newBitmap.eraseColor(Color.WHITE)
+
+        val canvas = Canvas(newBitmap)
+
+        val paint = Paint()
+        paint.color = Color.BLACK // Text Color
+        paint.textSize = 24f // Text Size
+        paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_OVER) // Text Overlapping Pattern
+
+        // some more settings...
+        canvas.drawBitmap(oldBitmap, 0f, 30f, null)
+        canvas.drawText(productName, getTextWidth(productName, newBitmap, paint), 22f, paint)
+        canvas.drawText(barcode, getTextWidth(barcode, newBitmap, paint), 264f, paint)
+
+        return newBitmap
+    }
+
+    private fun getTextWidth(text: String, bitmap: Bitmap, paint: Paint):Float{
+        val bounds = Rect()
+        paint.getTextBounds(text, 0, text.length, bounds)
+
+        return bitmap.width / 2f - bounds.width() / 2f
     }
 
 }

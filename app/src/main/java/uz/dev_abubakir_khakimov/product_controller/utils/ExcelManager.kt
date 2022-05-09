@@ -76,7 +76,7 @@ class ExcelManager(val context: Context, val productsList: ArrayList<Product>) {
     }
 
     private fun getDecimalFormat(it: Double): String{
-        return DecimalFormat("#.###").format(it)
+        return DecimalFormat("#.###").format(it).replace(",", ".")
     }
 
     private fun getStringDate(dateMillis: Long):String{

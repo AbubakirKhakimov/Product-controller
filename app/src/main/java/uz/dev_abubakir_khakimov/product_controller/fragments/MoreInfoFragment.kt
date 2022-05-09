@@ -73,7 +73,7 @@ class MoreInfoFragment : DialogFragment() {
 
     private fun saveImageExternalStorage(){
         MediaSaveManager(requireActivity()).apply {
-            saveMediaToStorage(binding.barCodeImage.drawable.toBitmap(), "${product.barcode}_${product.name}.jpg")
+            saveMediaToStorage(binding.barCodeImage.drawable.toBitmap(), product.barcode, product.name)
         }
 
         Toast.makeText(requireActivity(), getString(R.string.successfully_saved), Toast.LENGTH_SHORT).show()
