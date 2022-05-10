@@ -3,7 +3,6 @@
     <string name="app_name">Product controller</string>
     <string name="scanner">Сканер</string>
     <string name="add_product">Добавить продукт</string>
-    <string name="export_excel">Экспорт excel</string>
     <string name="languagesListName">Язык</string>
     <string name="englishLanguage">Английский</string>
     <string name="russianLanguage">Русский</string>

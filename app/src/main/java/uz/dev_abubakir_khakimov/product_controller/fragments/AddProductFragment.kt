@@ -24,6 +24,8 @@ import uz.dev_abubakir_khakimov.product_controller.databinding.FragmentAddProduc
 import uz.dev_abubakir_khakimov.product_controller.models.MainViewModel
 import uz.dev_abubakir_khakimov.product_controller.models.Product
 import uz.dev_abubakir_khakimov.product_controller.utils.BarcodeManager
+import uz.dev_abubakir_khakimov.product_controller.utils.Constants
+import uz.dev_abubakir_khakimov.product_controller.utils.MediaSaveManager
 import java.io.*
 import java.text.DecimalFormat
 import java.util.*
@@ -58,7 +60,7 @@ class AddProductFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        barcodeManager = BarcodeManager(420, 210)
+        barcodeManager = BarcodeManager(Constants.BARCODE_IMAGE_WIDTH, Constants.BARCODE_IMAGE_HEIGHT)
 
         checkEditOrAddMode()
 
@@ -197,7 +199,8 @@ class AddProductFragment : Fragment() {
     }
 
     private fun addProduct(newProduct: Product){
-        newProduct.barcodeImagePath = saveBitmap(bitmap!!, "${newProduct.barcode}_${newProduct.name}")
+        newProduct.barcodeImagePath = MediaSaveManager(requireActivity())
+            .saveBitmapToInterStorage(bitmap!!, "${newProduct.barcode}_${newProduct.name}")
 
         viewModel.insertProduct(newProduct)
         Toast.makeText(requireActivity(), getString(R.string.successfully_saved), Toast.LENGTH_SHORT).show()
@@ -247,18 +250,6 @@ class AddProductFragment : Fragment() {
 
     private fun requestCameraPermission(){
         cameraPermission.launch(Manifest.permission.CAMERA)
-    }
-
-    @Throws(IOException::class)
-    fun saveBitmap(bmp: Bitmap, fileName: String): String {
-        val bytes = ByteArrayOutputStream()
-        bmp.compress(Bitmap.CompressFormat.JPEG, 90, bytes)
-        val f = File(requireActivity().filesDir,"$fileName.jpg")
-        f.createNewFile()
-        val fo = FileOutputStream(f)
-        fo.write(bytes.toByteArray())
-        fo.close()
-        return f.absolutePath
     }
 
 }

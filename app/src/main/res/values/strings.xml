@@ -2,7 +2,6 @@
     <string name="app_name">Product controller</string>
     <string name="scanner">Scanner</string>
     <string name="add_product">Add product</string>
-    <string name="export_excel">Export excel</string>
     <string name="languagesListName">Language</string>
     <string name="englishLanguage">English</string>
     <string name="russianLanguage">Russian</string>
@@ -33,4 +32,8 @@
     <string name="successfully_removed">Successfully removed!</string>
     <string name="edit_product">Edit product</string>
     <string name="sort_by_date">Sort by date</string>
+    <string name="exporting">Export . . .</string>
+    <string name="export_excel">Export excel</string>
+    <string name="import_excel">Import excel</string>
+    <string name="importing">Importing. . .</string>
 </resources>

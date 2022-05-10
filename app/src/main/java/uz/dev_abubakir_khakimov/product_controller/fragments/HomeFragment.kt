@@ -1,14 +1,11 @@
 package uz.dev_abubakir_khakimov.product_controller.fragments
 
 import android.Manifest
-import android.R.attr.mimeType
 import android.app.AlertDialog
 import android.content.ActivityNotFoundException
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -20,22 +17,20 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.os.bundleOf
-import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.google.android.material.snackbar.Snackbar
-import org.apache.poi.hssf.usermodel.HeaderFooter.file
 import uz.dev_abubakir_khakimov.product_controller.R
 import uz.dev_abubakir_khakimov.product_controller.adapters.ProductsListAdapter
 import uz.dev_abubakir_khakimov.product_controller.adapters.ProductsListAdapterCallBack
-import uz.dev_abubakir_khakimov.product_controller.databinding.ExportExcelDialogLayoutBinding
+import uz.dev_abubakir_khakimov.product_controller.databinding.ExcelProgressDialogLayoutBinding
 import uz.dev_abubakir_khakimov.product_controller.databinding.FragmentHomeBinding
 import uz.dev_abubakir_khakimov.product_controller.models.MainViewModel
 import uz.dev_abubakir_khakimov.product_controller.models.Product
 import uz.dev_abubakir_khakimov.product_controller.utils.ExcelManager
+import uz.dev_abubakir_khakimov.product_controller.utils.ExcelExportCallBack
+import uz.dev_abubakir_khakimov.product_controller.utils.ExcelImportCallBack
 import java.io.File
 
 
@@ -44,6 +39,7 @@ class HomeFragment : Fragment(), ProductsListAdapterCallBack {
     lateinit var binding: FragmentHomeBinding
     lateinit var viewModel: MainViewModel
     lateinit var productsListAdapter: ProductsListAdapter
+    lateinit var excelManager: ExcelManager
 
     val productsList = ArrayList<Product>()
 
@@ -64,17 +60,14 @@ class HomeFragment : Fragment(), ProductsListAdapterCallBack {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        excelManager = ExcelManager(requireActivity())
         productsListAdapter = ProductsListAdapter(productsList, this)
         binding.productsListRv.adapter = productsListAdapter
 
         readAllProducts()
 
-        binding.exportExcel.setOnClickListener {
-            if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
-                exportExcel()
-            }else{
-                requestStoragePermission()
-            }
+        binding.exportImport.setOnClickListener {
+            showExportImportMenu()
         }
 
         binding.sortMode.setOnClickListener {
@@ -133,6 +126,10 @@ class HomeFragment : Fragment(), ProductsListAdapterCallBack {
     }
 
     override fun moreSelectedListener(position: Int, view: View) {
+        showItemMoreMenu(position, view)
+    }
+
+    private fun showItemMoreMenu(position: Int, view: View){
         val popupMenu = PopupMenu(requireActivity(), view)
         popupMenu.inflate(R.menu.more_func_menu)
         popupMenu.setOnMenuItemClickListener {
@@ -162,19 +159,104 @@ class HomeFragment : Fragment(), ProductsListAdapterCallBack {
         Toast.makeText(requireActivity(), getString(R.string.successfully_removed), Toast.LENGTH_SHORT).show()
     }
 
+    private fun deleteImage(path: String){
+        val file = File(path)
+        if (file.exists()){
+            file.delete()
+        }
+    }
+
+    private fun showExportImportMenu(){
+        val popupMenu = PopupMenu(requireActivity(), binding.exportImport)
+        popupMenu.inflate(R.menu.export_import_menu)
+        popupMenu.setOnMenuItemClickListener {
+            when(it.itemId){
+                R.id.export_excel -> {
+                    preparationExport()
+                }
+                R.id.import_excel -> {
+                    showFileChooser()
+                }
+            }
+            true
+        }
+        popupMenu.show()
+    }
+
+    val fileChooser = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        importExcel(uri)
+    }
+
+    private fun showFileChooser(){
+        fileChooser.launch("*/*")
+    }
+
+    private fun importExcel(uri: Uri){
+        val customDialog = AlertDialog.Builder(requireActivity()).create()
+        customDialog.setCancelable(false)
+        val dialogBinding = ExcelProgressDialogLayoutBinding.inflate(layoutInflater)
+        customDialog.setView(dialogBinding.root)
+
+        dialogBinding.title.text = getString(R.string.importing)
+        var max = 0
+
+        Thread{
+            excelManager.importExcel(uri, object :ExcelImportCallBack{
+                override fun getItemSize(size: Int) {
+                    requireActivity().runOnUiThread {
+                        max = size
+                        dialogBinding.progressBar.max = size
+                        dialogBinding.progress.text = getProgress(0, size)
+                    }
+                }
+
+                override fun saveItem(product: Product, progress: Int) {
+                    requireActivity().runOnUiThread {
+                        viewModel.insertProduct(product)
+
+                        dialogBinding.progressBar.progress = progress
+                        dialogBinding.progress.text = getProgress(progress, max)
+                    }
+                }
+            })
+
+            requireActivity().runOnUiThread {
+                customDialog.dismiss()
+            }
+        }.start()
+
+        customDialog.show()
+    }
+
+    private fun preparationExport(){
+        if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
+            exportExcel()
+        }else{
+            requestStoragePermission()
+        }
+    }
+
     private fun exportExcel(){
         val customDialog = AlertDialog.Builder(requireActivity()).create()
-        customDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         customDialog.setCancelable(false)
-        val dialogBinding = ExportExcelDialogLayoutBinding.inflate(layoutInflater)
+        val dialogBinding = ExcelProgressDialogLayoutBinding.inflate(layoutInflater)
         customDialog.setView(dialogBinding.root)
 
         var file: File
 
+        dialogBinding.title.text = getString(R.string.exporting)
+        dialogBinding.progressBar.max = productsList.size
+        dialogBinding.progress.text = getProgress(0, productsList.size)
+
         Thread{
-            ExcelManager(requireActivity(), productsList).apply {
-                file = createExcel(createWorkbook())
-            }
+            file = excelManager.exportExcel(productsList, object :ExcelExportCallBack{
+                override fun itemAdded(progress: Int) {
+                    requireActivity().runOnUiThread {
+                        dialogBinding.progressBar.progress = progress
+                        dialogBinding.progress.text = getProgress(progress, productsList.size)
+                    }
+                }
+            })
 
             requireActivity().runOnUiThread {
                 customDialog.dismiss()
@@ -183,6 +265,10 @@ class HomeFragment : Fragment(), ProductsListAdapterCallBack {
         }.start()
 
         customDialog.show()
+    }
+
+    private fun getProgress(progress: Int, max: Int): String {
+        return "$progress / $max"
     }
 
     private fun showSnackBar(file: File) {
@@ -225,13 +311,6 @@ class HomeFragment : Fragment(), ProductsListAdapterCallBack {
 
     private fun requestStoragePermission(){
         storagePermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-    }
-
-    private fun deleteImage(path: String){
-        val file = File(path)
-        if (file.exists()){
-            file.delete()
-        }
     }
 
 }

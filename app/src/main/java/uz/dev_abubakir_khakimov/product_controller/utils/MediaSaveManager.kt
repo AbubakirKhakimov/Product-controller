@@ -7,14 +7,24 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
-import java.io.File
-import java.io.FileOutputStream
-import java.io.OutputStream
+import java.io.*
 
 
 class MediaSaveManager(val context: Context) {
 
-    fun saveMediaToStorage(bitmap: Bitmap, barcode: String, productName: String): File {
+    @Throws(IOException::class)
+    fun saveBitmapToInterStorage(bmp: Bitmap, fileName: String): String {
+        val bytes = ByteArrayOutputStream()
+        bmp.compress(Bitmap.CompressFormat.JPEG, 90, bytes)
+        val f = File(context.filesDir,"$fileName.jpg")
+        f.createNewFile()
+        val fo = FileOutputStream(f)
+        fo.write(bytes.toByteArray())
+        fo.close()
+        return f.absolutePath
+    }
+
+    fun saveBitmapToExtStorage(bitmap: Bitmap, barcode: String, productName: String): File {
         val fileName = "${barcode}_${productName}.jpg"
 
         //Output stream
@@ -92,7 +102,7 @@ class MediaSaveManager(val context: Context) {
         return newBitmap
     }
 
-    private fun getTextWidth(text: String, bitmap: Bitmap, paint: Paint):Float{
+    private fun getTextWidth(text: String, bitmap: Bitmap, paint: Paint): Float{
         val bounds = Rect()
         paint.getTextBounds(text, 0, text.length, bounds)
 
