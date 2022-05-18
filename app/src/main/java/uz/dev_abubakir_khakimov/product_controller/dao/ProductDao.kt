@@ -10,11 +10,14 @@ interface ProductDao {
     @Query("select * from product_table")
     fun getAllProducts(): LiveData<List<Product>>
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertProduct(product: Product)
 
     @Delete
     fun removeProduct(product: Product)
+
+    @Query("select * from product_table where name like :name")
+    fun searchProducts(name: String): LiveData<List<Product>>
 
     @Update
     fun editProduct(product: Product)

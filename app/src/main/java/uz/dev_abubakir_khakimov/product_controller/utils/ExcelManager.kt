@@ -9,8 +9,11 @@ import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
+import android.widget.Toast
+import org.apache.poi.POIXMLException
 import org.apache.poi.ss.usermodel.*
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
+import uz.dev_abubakir_khakimov.product_controller.R
 import uz.dev_abubakir_khakimov.product_controller.models.Product
 import java.io.*
 import java.text.DecimalFormat
@@ -42,7 +45,7 @@ class ExcelManager(val context: Context) {
             val row = sheet.getRow(i)
             val product = getProductByRow(row)
 
-            excImpCallBack.saveItem(product, i+1)
+            excImpCallBack.saveItem(product, i + 1)
         }
     }
 
@@ -51,7 +54,7 @@ class ExcelManager(val context: Context) {
         val barcode: String
 
         return Product(
-            row.getCell(0).stringCellValue.toInt(),
+            0,
             row.getCell(1).stringCellValue.apply {
                 name = this
             },

@@ -15,6 +15,9 @@
         <action
             android:id="@+id/action_homeFragment_to_addProductFragment"
             app:destination="@id/addProductFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_searchFragment"
+            app:destination="@id/searchFragment" />
     </fragment>
     <fragment
         android:id="@+id/addProductFragment"
@@ -53,5 +56,14 @@
         <action
             android:id="@+id/action_mainMenuFragment_to_scannerFragment"
             app:destination="@id/scannerFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="uz.dev_abubakir_khakimov.product_controller.fragments.SearchFragment"
+        android:label="fragment_search"
+        tools:layout="@layout/fragment_search" >
+        <action
+            android:id="@+id/action_searchFragment_to_moreInfoFragment"
+            app:destination="@id/moreInfoFragment" />
     </fragment>
 </navigation>

@@ -33,4 +33,13 @@
     <string name="successfully_removed">Muvaffaqiyatli o\'chirildi!</string>
     <string name="edit_product">Mahsulotni tahrirlash</string>
     <string name="sort_by_date">Sana bo\'yicha saralash</string>
+    <string name="exporting">Eksport qilinmoqda…</string>
+    <string name="export_excel">Eksport excel</string>
+    <string name="import_excel">Import excel</string>
+    <string name="importing">Import qilinmoqda…</string>
+    <string name="file_error">Fayl shikastlangan yoki turiga mos kelmaydi!</string>
+    <string name="enter_product_name">Mahsulot nomini kiriting…</string>
+    <string name="this_application_is_blocked">Bu ilova bloklandi!</string>
+    <string name="contact_the_programmer_to_find_out_the_reason_for_blocking">Bloklanish sababini bilish uchun dasturchi bilan bog\'laning!</string>
+    <string name="close_app">Ilovani yopish</string>
 </resources>

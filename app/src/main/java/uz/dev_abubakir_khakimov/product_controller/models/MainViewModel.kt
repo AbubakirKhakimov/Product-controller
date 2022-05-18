@@ -5,12 +5,19 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.ktx.Firebase
 import uz.dev_abubakir_khakimov.product_controller.dao.ProductDao
 import uz.dev_abubakir_khakimov.product_controller.database.ProductDatabase
 
 class MainViewModel(application: Application): AndroidViewModel(application) {
 
     private val productDao: ProductDao = ProductDatabase.getInstance(application).productDao()
+
+    private val isPermitted = MutableLiveData<Boolean>()
 
     fun readAllProducts(): LiveData<List<Product>> {
         return productDao.getAllProducts()
@@ -42,6 +49,28 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
 
     fun sortByDate():LiveData<List<Product>>{
         return productDao.sortByDate()
+    }
+
+    fun searchProducts(name: String):LiveData<List<Product>>{
+        return productDao.searchProducts(name)
+    }
+
+    fun checkVersion(currentVersionCode: Int): LiveData<Boolean>{
+        FirebaseDatabase.getInstance().getReference("permittedVersionCode")
+            .addValueEventListener(object : ValueEventListener{
+
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val permittedVersionCode = snapshot.getValue(Int::class.java)!!
+                isPermitted.value = currentVersionCode >= permittedVersionCode
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+
+        })
+
+        return isPermitted
     }
 
 }

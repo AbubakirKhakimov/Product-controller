@@ -33,4 +33,13 @@
     <string name="successfully_removed">Успешно удалено!</string>
     <string name="edit_product">Изменить продукт</string>
     <string name="sort_by_date">Сортировать по дате</string>
+    <string name="exporting">Экспорт…</string>
+    <string name="export_excel">Экспорт excel</string>
+    <string name="import_excel">Импорт excel</string>
+    <string name="importing">Импорт…</string>
+    <string name="file_error">Файл поврежден или не соответствует типу!</string>
+    <string name="enter_product_name">Введите название продукта…</string>
+    <string name="close_app">Закрыть приложение</string>
+    <string name="this_application_is_blocked">Это приложение заблокировано!</string>
+    <string name="contact_the_programmer_to_find_out_the_reason_for_blocking">Свяжитесь с программистом, чтобы узнать причину блокировки!</string>
 </resources>

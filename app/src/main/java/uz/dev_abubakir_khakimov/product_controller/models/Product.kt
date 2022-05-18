@@ -1,10 +1,11 @@
 package uz.dev_abubakir_khakimov.product_controller.models
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import java.io.Serializable
 
-@Entity(tableName = "product_table")
+@Entity(tableName = "product_table", indices = [Index(value = ["barcode"], unique = true)])
 data class Product(
     @PrimaryKey(autoGenerate = true)
     val id: Int,

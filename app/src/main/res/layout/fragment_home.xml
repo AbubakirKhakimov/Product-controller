@@ -35,6 +35,15 @@
             android:textSize="20sp" />
 
         <ImageView
+            android:id="@+id/search"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            android:src="@drawable/ic_baseline_search_24"
+            app:tint="@color/white" />
+
+        <ImageView
             android:id="@+id/sortMode"
             android:layout_width="30dp"
             android:layout_height="30dp"

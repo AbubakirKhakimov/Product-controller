@@ -32,8 +32,14 @@
     <string name="successfully_removed">Successfully removed!</string>
     <string name="edit_product">Edit product</string>
     <string name="sort_by_date">Sort by date</string>
-    <string name="exporting">Export . . .</string>
+    <string name="exporting">Exporting…</string>
     <string name="export_excel">Export excel</string>
     <string name="import_excel">Import excel</string>
-    <string name="importing">Importing. . .</string>
+    <string name="importing">Importing…</string>
+    <string name="file_error">The file is damaged or does not match the type!</string>
+    <string name="enter_product_name">Enter product name…</string>
+    <string name="this_application_is_blocked">This application is blocked!</string>
+    <string name="contact_the_programmer_to_find_out_the_reason_for_blocking">Contact the programmer to find out the reason for the block!</string>
+    <string name="copyright" translatable="false">Copyright © 2022 Khakimov Abubakir</string>
+    <string name="close_app">Close app</string>
 </resources>

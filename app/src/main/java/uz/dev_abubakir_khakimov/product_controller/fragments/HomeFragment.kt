@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,9 +19,11 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException
 import uz.dev_abubakir_khakimov.product_controller.R
 import uz.dev_abubakir_khakimov.product_controller.adapters.ProductsListAdapter
 import uz.dev_abubakir_khakimov.product_controller.adapters.ProductsListAdapterCallBack
@@ -38,8 +41,9 @@ class HomeFragment : Fragment(), ProductsListAdapterCallBack {
 
     lateinit var binding: FragmentHomeBinding
     lateinit var viewModel: MainViewModel
-    lateinit var productsListAdapter: ProductsListAdapter
     lateinit var excelManager: ExcelManager
+    lateinit var productsListAdapter: ProductsListAdapter
+    lateinit var productsLiveData: LiveData<List<Product>>
 
     val productsList = ArrayList<Product>()
 
@@ -76,6 +80,10 @@ class HomeFragment : Fragment(), ProductsListAdapterCallBack {
 
         binding.backStack.setOnClickListener {
             findNavController().popBackStack()
+        }
+
+        binding.search.setOnClickListener {
+            findNavController().navigate(R.id.action_homeFragment_to_searchFragment)
         }
 
     }
@@ -115,8 +123,9 @@ class HomeFragment : Fragment(), ProductsListAdapterCallBack {
         productsListAdapter.notifyDataSetChanged()
     }
 
-    private fun readAllProducts(){
-        viewModel.readAllProducts().observe(viewLifecycleOwner){
+    private fun readAllProducts() {
+        productsLiveData = viewModel.readAllProducts()
+        productsLiveData.observe(viewLifecycleOwner) {
             updateUI(it)
         }
     }
@@ -184,7 +193,9 @@ class HomeFragment : Fragment(), ProductsListAdapterCallBack {
     }
 
     val fileChooser = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-        importExcel(uri)
+        if (uri != null){
+            importExcel(uri)
+        }
     }
 
     private fun showFileChooser(){
@@ -201,27 +212,36 @@ class HomeFragment : Fragment(), ProductsListAdapterCallBack {
         var max = 0
 
         Thread{
-            excelManager.importExcel(uri, object :ExcelImportCallBack{
-                override fun getItemSize(size: Int) {
-                    requireActivity().runOnUiThread {
+            try {
+                excelManager.importExcel(uri, object :ExcelImportCallBack{
+                    override fun getItemSize(size: Int) {
                         max = size
-                        dialogBinding.progressBar.max = size
-                        dialogBinding.progress.text = getProgress(0, size)
-                    }
-                }
 
-                override fun saveItem(product: Product, progress: Int) {
-                    requireActivity().runOnUiThread {
+                        requireActivity().runOnUiThread {
+                            productsLiveData.removeObservers(viewLifecycleOwner)
+                            dialogBinding.progressBar.max = size
+                            dialogBinding.progress.text = getProgress(0, size)
+                        }
+                    }
+
+                    override fun saveItem(product: Product, progress: Int) {
                         viewModel.insertProduct(product)
 
-                        dialogBinding.progressBar.progress = progress
-                        dialogBinding.progress.text = getProgress(progress, max)
+                        requireActivity().runOnUiThread {
+                            dialogBinding.progressBar.progress = progress
+                            dialogBinding.progress.text = getProgress(progress, max)
+                        }
                     }
+                })
+            }catch (e: InvalidFormatException) {
+                requireActivity().runOnUiThread {
+                    Toast.makeText(context, getString(R.string.file_error), Toast.LENGTH_SHORT).show()
                 }
-            })
+            }
 
             requireActivity().runOnUiThread {
                 customDialog.dismiss()
+                readAllProducts()
             }
         }.start()
 

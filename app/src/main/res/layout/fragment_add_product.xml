@@ -155,8 +155,6 @@
                     android:id="@+id/percent"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="0"
-                    android:focusable="false"
                     android:inputType="numberDecimal" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -189,8 +187,6 @@
                     android:id="@+id/term"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="10"
-                    android:focusable="false"
                     android:inputType="number" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -204,8 +200,6 @@
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/firm"
-                    android:text="gm"
-                    android:focusable="false"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
