@@ -7,6 +7,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.PopupMenu
+import android.widget.Toast
+import androidx.core.os.bundleOf
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -16,6 +19,7 @@ import uz.dev_abubakir_khakimov.product_controller.adapters.ProductsListAdapterC
 import uz.dev_abubakir_khakimov.product_controller.databinding.FragmentSearchBinding
 import uz.dev_abubakir_khakimov.product_controller.models.MainViewModel
 import uz.dev_abubakir_khakimov.product_controller.models.Product
+import java.io.File
 
 class SearchFragment : Fragment(), ProductsListAdapterCallBack {
 
@@ -79,11 +83,48 @@ class SearchFragment : Fragment(), ProductsListAdapterCallBack {
     }
 
     override fun itemSelectedListener(position: Int) {
-
+        MoreInfoFragment.newInstance(searchResultsList[position]).show(childFragmentManager, "tag")
     }
 
     override fun moreSelectedListener(position: Int, view: View) {
+        showItemMoreMenu(position, view)
+    }
 
+    private fun showItemMoreMenu(position: Int, view: View){
+        val popupMenu = PopupMenu(requireActivity(), view)
+        popupMenu.inflate(R.menu.more_func_menu)
+        popupMenu.setOnMenuItemClickListener {
+            when(it.itemId){
+                R.id.edit -> {
+                    findNavController().navigate(R.id.action_searchFragment_to_addProductFragment, bundleOf(
+                        "selectedProduct" to searchResultsList[position]
+                    ))
+                }
+                R.id.remove -> {
+                    removeProduct(position)
+                }
+            }
+            true
+        }
+        popupMenu.show()
+    }
+
+    private fun removeProduct(position: Int){
+        viewModel.removeProduct(searchResultsList[position])
+        deleteImage(searchResultsList[position].barcodeImagePath)
+
+        searchResultsList.removeAt(position)
+        productsListAdapter.notifyItemRemoved(position)
+        productsListAdapter.notifyItemRangeChanged(0, searchResultsList.size)
+
+        Toast.makeText(requireActivity(), getString(R.string.successfully_removed), Toast.LENGTH_SHORT).show()
+    }
+
+    private fun deleteImage(path: String){
+        val file = File(path)
+        if (file.exists()){
+            file.delete()
+        }
     }
 
 }
