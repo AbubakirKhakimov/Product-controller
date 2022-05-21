@@ -42,4 +42,5 @@
     <string name="close_app">Закрыть приложение</string>
     <string name="this_application_is_blocked">Это приложение заблокировано!</string>
     <string name="contact_the_programmer_to_find_out_the_reason_for_blocking">Свяжитесь с программистом, чтобы узнать причину блокировки!</string>
+    <string name="cell_type_error">Тип данных в файле не совпадает!</string>
 </resources>

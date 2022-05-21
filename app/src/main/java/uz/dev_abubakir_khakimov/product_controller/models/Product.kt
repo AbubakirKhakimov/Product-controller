@@ -14,9 +14,9 @@ data class Product(
     val entryPrice: Double,
     val percent: Double,
     val sellingPrice: Double,
-    val term: String,
+    val term: Int,
     val firm: String,
     val barcode: String,
     var barcodeImagePath: String,
     val entryDate: Long
-):Serializable
+): Serializable

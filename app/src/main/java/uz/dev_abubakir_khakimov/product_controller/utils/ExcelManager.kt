@@ -49,31 +49,51 @@ class ExcelManager(val context: Context) {
         }
     }
 
-    private fun getProductByRow(row: Row): Product{
+    private fun getProductByRow(row: Row): Product {
         val name: String
         val barcode: String
 
         return Product(
             0,
-            row.getCell(1).stringCellValue.apply {
+            getStringCellValue(row, 1).apply {
                 name = this
             },
-            row.getCell(2).stringCellValue.toInt(),
-            row.getCell(3).stringCellValue.toDouble(),
-            row.getCell(4).stringCellValue.toDouble(),
-            row.getCell(5).stringCellValue.toDouble(),
-            row.getCell(6).stringCellValue,
-            row.getCell(7).stringCellValue,
-            row.getCell(8).stringCellValue.apply {
+            getNumericCellValue(row, 2).toInt(),
+            getNumericCellValue(row, 3),
+            getNumericCellValue(row, 4),
+            getNumericCellValue(row, 5),
+            getNumericCellValue(row, 6).toInt(),
+            getStringCellValue(row, 7),
+            getStringCellValue(row, 8).apply {
                 barcode = this
             },
             createImage(barcode, name),
-            getTimeMillis(row.getCell(9).stringCellValue),
+            getTimeMillis(getStringCellValue(row, 9)),
         )
+    }
+
+    private fun getStringCellValue(row: Row, cellIndex: Int): String{
+        return try {
+            row.getCell(cellIndex).stringCellValue
+        }catch (e: NullPointerException){
+            ""
+        }
+    }
+
+    private fun getNumericCellValue(row: Row, cellIndex: Int): Double{
+        return try {
+            row.getCell(cellIndex).numericCellValue
+        }catch (e: NullPointerException){
+            0.0
+        }
     }
 
     private fun getTimeMillis(date: String): Long{
         val dateArray = date.split("-")    //yyyy-MM-dd
+
+        if (dateArray.isEmpty()){
+            return 0L
+        }
 
         val calendar = Calendar.getInstance()
         calendar.set(Calendar.MILLISECOND, 0)
@@ -148,27 +168,29 @@ class ExcelManager(val context: Context) {
     } **/
 
     private fun addRowData(row: Row, product: Product){
-        createCell(row, 0, product.id.toString())
+        createCell(row, 0, product.id.toDouble())
         createCell(row, 1, product.name)
-        createCell(row, 2, product.count.toString())
-        createCell(row, 3, getDecimalFormat(product.entryPrice))
-        createCell(row, 4, getDecimalFormat(product.percent))
-        createCell(row, 5, getDecimalFormat(product.sellingPrice))
-        createCell(row, 6, product.term)
+        createCell(row, 2, product.count.toDouble())
+        createCell(row, 3, product.entryPrice)
+        createCell(row, 4, product.percent)
+        createCell(row, 5, product.sellingPrice)
+        createCell(row, 6, product.term.toDouble())
         createCell(row, 7, product.firm)
         createCell(row, 8, product.barcode)
         createCell(row, 9, getStringDate(product.entryDate))
-    }
-
-    private fun getDecimalFormat(it: Double): String{
-        return DecimalFormat("#.###").format(it).replace(",", ".")
     }
 
     private fun getStringDate(dateMillis: Long):String{
         return SimpleDateFormat("yyyy-MM-dd").format(Date(dateMillis))
     }
 
-    private fun createCell(row: Row, columnIndex: Int, value: String?, cellStyle: CellStyle? = null) {
+    private fun createCell(row: Row, columnIndex: Int, value: String, cellStyle: CellStyle? = null) {
+        val cell = row.createCell(columnIndex)
+        cell?.setCellValue(value)
+        cell?.cellStyle = cellStyle
+    }
+
+    private fun createCell(row: Row, columnIndex: Int, value: Double, cellStyle: CellStyle? = null) {
         val cell = row.createCell(columnIndex)
         cell?.setCellValue(value)
         cell?.cellStyle = cellStyle

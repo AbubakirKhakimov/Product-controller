@@ -19,7 +19,7 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
 
     private val isPermitted = MutableLiveData<Boolean>()
 
-    fun readAllProducts(): LiveData<List<Product>> {
+    fun getAllProducts(): LiveData<List<Product>> {
         return productDao.getAllProducts()
     }
 

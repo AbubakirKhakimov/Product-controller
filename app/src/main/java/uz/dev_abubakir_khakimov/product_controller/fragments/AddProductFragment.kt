@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
@@ -29,6 +30,7 @@ import uz.dev_abubakir_khakimov.product_controller.utils.MediaSaveManager
 import java.io.*
 import java.text.DecimalFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class AddProductFragment : Fragment() {
@@ -36,8 +38,10 @@ class AddProductFragment : Fragment() {
     lateinit var binding: FragmentAddProductBinding
     lateinit var viewModel: MainViewModel
     lateinit var barcodeManager: BarcodeManager
-    var product: Product? = null
+    lateinit var autoCompleteAdapter: ArrayAdapter<String>
 
+    val namesList = ArrayList<String>()
+    var product: Product? = null
     var bitmap: Bitmap? = null
     var thisBarcode: String = ""
     var thisGeneratedBarcode = false
@@ -61,6 +65,7 @@ class AddProductFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         barcodeManager = BarcodeManager(Constants.BARCODE_IMAGE_WIDTH, Constants.BARCODE_IMAGE_HEIGHT)
+        getAllNames()
 
         checkEditOrAddMode()
 
@@ -92,6 +97,17 @@ class AddProductFragment : Fragment() {
 
     }
 
+    private fun getAllNames() {
+        viewModel.getAllProducts().observe(viewLifecycleOwner){ products ->
+            namesList.clear()
+            products.forEach {
+                namesList.add(it.name)
+            }
+            autoCompleteAdapter = ArrayAdapter(requireActivity(), android.R.layout.simple_list_item_1, namesList)
+            binding.name.setAdapter(autoCompleteAdapter)
+        }
+    }
+
     private fun checkEditOrAddMode(){
         if (product != null){
             binding.barcode.setText(product!!.barcode)
@@ -100,7 +116,7 @@ class AddProductFragment : Fragment() {
             binding.entryPrice.setText(getDecimalFormat(product!!.entryPrice))
             binding.percent.setText(getDecimalFormat(product!!.percent))
             binding.sellingPrice.setText(getDecimalFormat(product!!.sellingPrice))
-            binding.term.setText(product!!.term)
+            binding.term.setText(product!!.term.toString())
             binding.firm.setText(product!!.firm)
             Glide.with(requireActivity()).load(product!!.barcodeImagePath).into(binding.barcodeImage)
             binding.autoGenerate.visibility = View.GONE
@@ -176,7 +192,7 @@ class AddProductFragment : Fragment() {
                 binding.entryPrice.text.toString().toDouble(),
                 binding.percent.text.toString().toDouble(),
                 binding.sellingPrice.text.toString().toDouble(),
-                binding.term.text.toString().trim(),
+                binding.term.text.toString().toInt(),
                 binding.firm.text.toString().trim(),
                 binding.barcode.text.toString(),
                 "",
@@ -217,7 +233,6 @@ class AddProductFragment : Fragment() {
 
     private fun checkForIsEmpty(newProduct: Product):Boolean{
         return newProduct.name.isNotEmpty() &&
-                newProduct.term.isNotEmpty() &&
                 newProduct.firm.isNotEmpty() &&
                 if (bitmap != null || product != null) true else {
                     binding.barcodeLayout.error = getString(R.string.barcode_fill)

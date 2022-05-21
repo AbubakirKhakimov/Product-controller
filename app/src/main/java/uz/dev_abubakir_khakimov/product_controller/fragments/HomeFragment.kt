@@ -124,7 +124,7 @@ class HomeFragment : Fragment(), ProductsListAdapterCallBack {
     }
 
     private fun readAllProducts() {
-        productsLiveData = viewModel.readAllProducts()
+        productsLiveData = viewModel.getAllProducts()
         productsLiveData.observe(viewLifecycleOwner) {
             updateUI(it)
         }
@@ -236,6 +236,10 @@ class HomeFragment : Fragment(), ProductsListAdapterCallBack {
             }catch (e: InvalidFormatException) {
                 requireActivity().runOnUiThread {
                     Toast.makeText(context, getString(R.string.file_error), Toast.LENGTH_SHORT).show()
+                }
+            }catch (e: IllegalStateException){
+                requireActivity().runOnUiThread {
+                    Toast.makeText(context, getString(R.string.cell_type_error), Toast.LENGTH_SHORT).show()
                 }
             }
 

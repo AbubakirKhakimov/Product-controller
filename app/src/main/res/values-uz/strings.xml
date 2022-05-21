@@ -42,4 +42,5 @@
     <string name="this_application_is_blocked">Bu ilova bloklandi!</string>
     <string name="contact_the_programmer_to_find_out_the_reason_for_blocking">Bloklanish sababini bilish uchun dasturchi bilan bog\'laning!</string>
     <string name="close_app">Ilovani yopish</string>
+    <string name="cell_type_error">Fayldagi ma\'lumotlar turi mos emas!</string>
 </resources>

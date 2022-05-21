@@ -85,7 +85,7 @@ class MoreInfoFragment : DialogFragment() {
         binding.entryPrice.text = getConcatenateStr(getString(R.string.entry_price), getDecimalFormat(product.entryPrice))
         binding.sellingPrice.text = getConcatenateStr(getString(R.string.selling_price), getDecimalFormat(product.sellingPrice))
         binding.percent.text = getConcatenateStr(getString(R.string.percent), getDecimalFormat(product.percent))
-        binding.term.text = getConcatenateStr(getString(R.string.term), product.term)
+        binding.term.text = getConcatenateStr(getString(R.string.term), product.term.toString())
         binding.firmName.text = getConcatenateStr(getString(R.string.firm), product.firm)
         binding.entryDate.text = getConcatenateStr(getString(R.string.entry_date), getStringDate(product.entryDate))
     }

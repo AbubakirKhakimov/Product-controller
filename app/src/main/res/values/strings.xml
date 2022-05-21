@@ -42,4 +42,5 @@
     <string name="contact_the_programmer_to_find_out_the_reason_for_blocking">Contact the programmer to find out the reason for the block!</string>
     <string name="copyright" translatable="false">Copyright © 2022 Khakimov Abubakir</string>
     <string name="close_app">Close app</string>
+    <string name="cell_type_error">The data type in the file does not match!</string>
 </resources>
