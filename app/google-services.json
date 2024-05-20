@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:622910791177:android:b8c672fb94eda5e56122d8",
         "android_client_info": {
-          "package_name": "uz.dev_abubakir_khakimov.product_controller"
+          "package_name": "uz.abubakir_khakimov.product_controller"
         }
       },
       "oauth_client": [
@@ -18,7 +18,7 @@
           "client_id": "622910791177-magot98jv35c528u9ajs8ghcg32875vi.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "uz.dev_abubakir_khakimov.product_controller",
+            "package_name": "uz.abubakir_khakimov.product_controller",
             "certificate_hash": "df280b1f3a935f933d79c79cdfd68a4030e142bc"
           }
         },
@@ -26,7 +26,7 @@
           "client_id": "622910791177-nu6c9bca1828t3gs5lojor56ulilhpdj.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "uz.dev_abubakir_khakimov.product_controller",
+            "package_name": "uz.abubakir_khakimov.product_controller",
             "certificate_hash": "94b82c8f9cc76538e5e7472715e94742ae20c77f"
           }
         },
